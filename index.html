@@ -1826,12 +1826,13 @@ async function generate(target) {
     try {
       const weak = KEYS.filter(k => S.ai.wrong[k] > 0).sort((a, b) => S.ai.wrong[b] - S.ai.wrong[a]);
       const recent = S.ai.recent.slice(-4).map(r => `${r.principle}: ${r.title}`);
+      const tg = chooseTarget(target); // adaptive: weak principles appear more often
       // text/plain = "simple request": no CORS preflight (needed for Google Apps Script, fine for Workers too)
-      const r = await fetch(window.GESTALT_AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ target, recent, weak }), redirect: 'follow' });
+      const r = await fetch(window.GESTALT_AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ target: tg, recent, weak }), redirect: 'follow' });
       const j = await r.json().catch(() => ({ error: 'HTTP ' + r.status }));
       if (r.status === 429 || j.code === 'rate_limited') return { spec: simulate(target), source: 'sim', note: 'Batas permintaan GenAI tercapai, jadi soal ini dibuat oleh generator simulasi. Coba lagi beberapa menit lagi.' };
       if (!r.ok || j.error) throw new Error(j.error || ('HTTP ' + r.status));
-      return { spec: normalize(parseJSONLoose(j), target), source: 'endpoint' };
+      return { spec: normalize(parseJSONLoose(j), tg), source: 'endpoint' };
     } catch (e) {
       console.warn('Backend GenAI gagal:', e);
       return { spec: simulate(target), source: 'sim', note: 'Backend GenAI tidak dapat dihubungi, jadi soal ini dibuat oleh generator simulasi.' };
