@@ -311,7 +311,7 @@ details.spec pre{background:#151515;color:#f1ece2;border-radius:14px;padding:12p
      Isi dengan URL Cloudflare Worker kamu, contoh:
      window.GESTALT_AI_ENDPOINT = 'https://gestalt-ai.namakamu.workers.dev';
      Biarkan kosong ('') untuk memakai mode simulasi. */
-  window.GESTALT_AI_ENDPOINT = '';
+  window.GESTALT_AI_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxv_KHvZJZO97FR8akHD9g-tpTlC_tLY_ujs_6YNUBewWdp0j56gyJn0wPFmqd4GNk/exec';
 </script>
 <script type="importmap">
 { "imports": {
@@ -1621,7 +1621,7 @@ function renderAIStatus() {
   const chip = $('#aiChip'), txt = $('#aiChipTxt');
   const m = AI.active;
   chip.className = 'chip ' + (m === 'sim' ? 'ai-sim' : 'ai-on');
-  txt.textContent = AI.checking && m === 'sim' ? 'Menghubungkan GenAI…' : m === 'claude' ? 'GenAI aktif · Claude' : m === 'endpoint' ? 'GenAI aktif · API' : 'GenAI: mode simulasi';
+  txt.textContent = AI.checking && m === 'sim' ? 'Menghubungkan GenAI…' : m === 'claude' ? 'GenAI aktif · Claude' : m === 'endpoint' ? 'GenAI aktif · Gemini' : 'GenAI: mode simulasi';
   const line = $('#aiStatusLine');
   if (line) line.innerHTML = `<b>Status saat ini:</b> ${m === 'claude' ? 'terhubung ke Claude melalui runtime platform.' : m === 'endpoint' ? 'terhubung ke backend: ' + window.GESTALT_AI_ENDPOINT : 'mode simulasi (generator lokal berbasis aturan).'}`;
   const segEl = $('#srcSeg');
@@ -1826,10 +1826,12 @@ async function generate(target) {
     try {
       const weak = KEYS.filter(k => S.ai.wrong[k] > 0).sort((a, b) => S.ai.wrong[b] - S.ai.wrong[a]);
       const recent = S.ai.recent.slice(-4).map(r => `${r.principle}: ${r.title}`);
-      const r = await fetch(window.GESTALT_AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target, recent, weak }) });
-      if (r.status === 429) return { spec: simulate(target), source: 'sim', note: 'Batas permintaan GenAI tercapai, jadi soal ini dibuat oleh generator simulasi. Coba lagi beberapa menit lagi.' };
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return { spec: normalize(parseJSONLoose(await r.json()), target), source: 'endpoint' };
+      // text/plain = "simple request": no CORS preflight (needed for Google Apps Script, fine for Workers too)
+      const r = await fetch(window.GESTALT_AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ target, recent, weak }), redirect: 'follow' });
+      const j = await r.json().catch(() => ({ error: 'HTTP ' + r.status }));
+      if (r.status === 429 || j.code === 'rate_limited') return { spec: simulate(target), source: 'sim', note: 'Batas permintaan GenAI tercapai, jadi soal ini dibuat oleh generator simulasi. Coba lagi beberapa menit lagi.' };
+      if (!r.ok || j.error) throw new Error(j.error || ('HTTP ' + r.status));
+      return { spec: normalize(parseJSONLoose(j), target), source: 'endpoint' };
     } catch (e) {
       console.warn('Backend GenAI gagal:', e);
       return { spec: simulate(target), source: 'sim', note: 'Backend GenAI tidak dapat dihubungi, jadi soal ini dibuat oleh generator simulasi.' };
@@ -1865,11 +1867,33 @@ function ensureChal() {
   const chips = $('#targetChips');
   const opts = [{ k: 'random', n: '✦ Acak' }, ...KEYS.map(k => ({ k, n: NAMES[k] }))];
   const paint = () => [...chips.children].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === chalTarget)));
-  opts.forEach(o => chips.append(h('button', { 'data-k': o.k, onclick: () => { chalTarget = o.k; paint(); } }, o.n)));
+  opts.forEach(o => chips.append(h('button', { 'data-k': o.k, onclick: () => { chalTarget = o.k; paint(); if (AI.active === 'endpoint') prefetch(chalTarget); } }, o.n)));
+  if (AI.active === 'endpoint') prefetch(chalTarget);
   paint();
   $('#genBtn').onclick = newChallenge; $('#nextBtn').onclick = newChallenge;
   $('#hintBtn').onclick = () => { $('#hintText').hidden = false; $('#hintBtn').hidden = true; };
   renderAIStatus();
+}
+/* ---------- background prefetch: hide GenAI latency ---------- */
+const PF = { p: null, target: null, res: null };
+function prefetch(target) {
+  if (AI.active === 'sim') return;
+  if (PF.p && PF.target === target) return;
+  PF.target = target; PF.res = null;
+  const p = generate(target).then(r => { if (PF.p === p) PF.res = r; return r; });
+  PF.p = p;
+}
+async function getChallenge() {
+  if (AI.active === 'sim') return generate(chalTarget);
+  if (!PF.p || PF.target !== chalTarget) prefetch(chalTarget);
+  const take = r => { PF.p = null; PF.res = null; return r; };
+  if (PF.res) return take(PF.res);
+  const t0 = Date.now();
+  const iv = setInterval(() => { $('#loadingTxt').textContent = `GenAI sedang menyusun latihan… ${Math.round((Date.now() - t0) / 1000)} dtk`; }, 1000);
+  const r = await Promise.race([PF.p, new Promise(ok => setTimeout(() => ok(null), 25000))]);
+  clearInterval(iv);
+  if (r) return take(r);
+  return { spec: simulate(chalTarget), source: 'sim', note: 'GenAI masih menyiapkan soal, jadi soal ini dibuat oleh simulasi; soal berikutnya dari GenAI.' };
 }
 async function newChallenge() {
   const btn = $('#genBtn'); btn.disabled = true;
@@ -1877,7 +1901,7 @@ async function newChallenge() {
   $('#loadingTxt').textContent = AI.active === 'sim' ? 'Generator simulasi menyusun latihan…' : 'GenAI sedang menyusun latihan…';
   $('#chalLoading').classList.add('on');
   let res;
-  try { res = await generate(chalTarget); } finally { $('#chalLoading').classList.remove('on'); btn.disabled = false; }
+  try { res = await getChallenge(); } finally { $('#chalLoading').classList.remove('on'); btn.disabled = false; }
   curSpec = res.spec; answered = false;
   const g = GEN[curSpec.principle](curSpec.params);
   chalStage.clear(); chalStage.setBoard('#f3f6ff');
@@ -1887,7 +1911,7 @@ async function newChallenge() {
     setTimeout(() => chalStage.animate(380, k => m.scale.setScalar(Math.max(.001, k))), Math.min(900, i * 18));
   });
   const src = $('#srcTag'); src.className = 'src' + (res.source === 'sim' ? '' : ' ai');
-  src.querySelector('span').textContent = res.source === 'claude' ? 'Dibuat oleh GenAI · Claude' : res.source === 'endpoint' ? 'Dibuat oleh GenAI · API' : 'Mode simulasi · generator lokal';
+  src.querySelector('span').textContent = res.source === 'claude' ? 'Dibuat oleh GenAI · Claude' : res.source === 'endpoint' ? 'Dibuat oleh GenAI · Gemini' : 'Mode simulasi · generator lokal';
   $('#scenTitle').textContent = curSpec.title;
   $('#scenText').textContent = curSpec.scenario + (res.note ? ' (' + res.note + ')' : '');
   $('#qbox').hidden = false; $('#qText').textContent = curSpec.question;
@@ -1897,6 +1921,7 @@ async function newChallenge() {
   const ans = $('#answers'); ans.innerHTML = '';
   KEYS.forEach(k => ans.append(h('button', { class: 'ans', 'data-k': k, onclick: () => answer(k) }, h('span', { html: ICON[k] }), NAMES[k], h('small', {}, IDN[k]))));
   $('#specBox').hidden = false;
+  if (AI.active !== 'sim') prefetch(chalTarget);
   $('#specPre').textContent = JSON.stringify({ source: res.source, ...curSpec, rendered: { variant: g.v, elements: g.els.length } }, null, 2);
 }
 function answer(k) {
