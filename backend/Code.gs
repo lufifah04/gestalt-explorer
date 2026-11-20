@@ -14,6 +14,7 @@
  * Pengaturan (Project Settings → Script Properties):
  *   GEMINI_API_KEY : API key dari Google AI Studio (wajib)
  *   GEMINI_MODEL   : (opsional) paksa ID model tertentu; kosongkan agar dipilih otomatis
+ *   MODEL_ORDER    : diisi otomatis oleh fungsi pilihModelTercepat()
  */
 
 const KEYS = ['proximity', 'similarity', 'closure', 'continuity', 'figure-ground'];
@@ -91,12 +92,14 @@ function allow_() {
 }
 
 /** Daftar model Gemini yang tersedia untuk API key ini, diurutkan otomatis (Flash stabil terbaru lebih dulu). */
-function models_(key) {
+function models_(key, all) {
   const forced = (PropertiesService.getScriptProperties().getProperty('GEMINI_MODEL') || '').trim();
-  if (forced) return [forced];
+  if (forced && !all) return [forced];
+  const measured = PropertiesService.getScriptProperties().getProperty('MODEL_ORDER');
+  if (measured && !all) { try { const m = JSON.parse(measured); if (m.length) return m; } catch (_) {} }
   const cache = CacheService.getScriptCache();
   const hit = cache.get('models');
-  if (hit) return JSON.parse(hit);
+  if (hit && !all) return JSON.parse(hit);
   const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
     headers: { 'x-goog-api-key': key }, muteHttpExceptions: true
   });
@@ -114,38 +117,73 @@ function models_(key) {
     const v = (n.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1];
     return s + (v ? parseFloat(v) * 10 : 0);
   };
-  const ranked = names.sort((a, b) => score(b) - score(a)).slice(0, 5);
+  const sorted = names.sort((a, b) => score(b) - score(a)).filter(n => score(n) > 0);
+  if (all) return sorted.slice(0, 8);
+  const ranked = sorted.slice(0, 5);
   if (!ranked.length) throw new Error('Tidak ada model Gemini yang tersedia untuk API key ini.');
   cache.put('models', JSON.stringify(ranked), 21600);
   return ranked;
+}
+
+/** Satu percobaan ke satu model. Mengembalikan {ok, spec, ms, info}. */
+function tryModel_(key, model, prompt) {
+  const t0 = Date.now();
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent';
+  const base = { responseMimeType: 'application/json', temperature: 1, maxOutputTokens: 2048 };
+  const post = cfg => UrlFetchApp.fetch(url, {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-goog-api-key': key },
+    payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: cfg })
+  });
+  // Tugas sederhana: matikan mode "berpikir" bila model mendukungnya; jika ditolak (HTTP 400), ulangi tanpa itu.
+  let r = post(Object.assign({}, base, { thinkingConfig: { thinkingBudget: 0 } }));
+  let note = 'thinking off';
+  if (r.getResponseCode() === 400) { r = post(base); note = 'thinking default'; }
+  const ms = Date.now() - t0, code = r.getResponseCode();
+  if (code !== 200) return { ok: false, ms, info: 'HTTP ' + code + ' (' + note + '): ' + r.getContentText().slice(0, 140) };
+  const data = JSON.parse(r.getContentText());
+  const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+  const text = parts.map(p => p.text || '').join('');
+  const a = text.indexOf('{'), b = text.lastIndexOf('}');
+  if (a < 0 || b < a) return { ok: false, ms, info: 'respons tanpa JSON (' + note + ')' };
+  try { return { ok: true, ms, info: note, spec: JSON.parse(text.slice(a, b + 1)) }; }
+  catch (_) { return { ok: false, ms, info: 'JSON tidak valid (' + note + ')' }; }
 }
 
 function callGemini_(key, prompt) {
   const models = models_(key);
   let lastErr = '';
   for (let i = 0; i < models.length; i++) {
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent';
-    const base = { responseMimeType: 'application/json', temperature: 1, maxOutputTokens: 2048 };
-    const post = cfg => UrlFetchApp.fetch(url, {
-      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-      headers: { 'x-goog-api-key': key },
-      payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: cfg })
-    });
-    // Tugas ini sederhana: matikan mode "berpikir" agar respons cepat.
-    // Jika model tidak mengenal pengaturan ini (HTTP 400), ulangi tanpa pengaturan tersebut.
-    let r = post(Object.assign({}, base, { thinkingConfig: { thinkingBudget: 0 } }));
-    if (r.getResponseCode() === 400) r = post(base);
-    const code = r.getResponseCode();
-    if (code !== 200) { lastErr = models[i] + ' → HTTP ' + code + ': ' + r.getContentText().slice(0, 160); continue; }
-    const data = JSON.parse(r.getContentText());
-    const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-    const text = parts.map(p => p.text || '').join('');
-    const a = text.indexOf('{'), b = text.lastIndexOf('}');
-    if (a < 0 || b < a) { lastErr = models[i] + ' → respons tanpa JSON'; continue; }
-    try { return JSON.parse(text.slice(a, b + 1)); } catch (_) { lastErr = models[i] + ' → JSON tidak valid'; }
+    const res = tryModel_(key, models[i], prompt);
+    if (res.ok) return res.spec;
+    lastErr = models[i] + ' → ' + res.info;
   }
   CacheService.getScriptCache().remove('models');
   throw new Error('Semua model gagal. Terakhir: ' + lastErr);
+}
+
+/**
+ * Jalankan sekali dari editor: mengukur kecepatan setiap model Gemini yang tersedia,
+ * lalu menyimpan urutan dari yang TERCEPAT ke Script Properties (MODEL_ORDER).
+ */
+function pilihModelTercepat() {
+  const key = apiKey_();
+  if (!key) throw new Error('Isi GEMINI_API_KEY dulu di Project Settings → Script Properties.');
+  const props = PropertiesService.getScriptProperties();
+  const cands = models_(key, true);
+  Logger.log('Kandidat: ' + cands.join(', '));
+  const prompt = buildPrompt_('random', [], []), start = Date.now(), ok = [];
+  for (let i = 0; i < cands.length; i++) {
+    if (Date.now() - start > 270000) { Logger.log('Waktu habis, sisa model dilewati.'); break; }
+    const res = tryModel_(key, cands[i], prompt);
+    Logger.log((res.ok ? '✅ ' : '❌ ') + cands[i] + ' — ' + (res.ms / 1000).toFixed(1) + ' detik — ' + res.info);
+    if (res.ok) ok.push({ m: cands[i], ms: res.ms });
+  }
+  if (!ok.length) throw new Error('Tidak ada model yang berhasil. Periksa API key atau kuota di AI Studio.');
+  const order = ok.sort((a, b) => a.ms - b.ms).map(x => x.m).slice(0, 4);
+  props.setProperty('MODEL_ORDER', JSON.stringify(order));
+  CacheService.getScriptCache().remove('models');
+  Logger.log('DISIMPAN. Urutan model (tercepat dulu): ' + order.join(', '));
 }
 
 function buildPrompt_(target, recent, weak) {
