@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestalt Explorer – Understanding Visual Perception</title>
+<meta name="description" content="Media pembelajaran interaktif 3D/AR + GenAI untuk memahami lima prinsip Gestalt dalam persepsi visual.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff8ec; --card:#ffffff; --ink:#151515; --muted:#5f5a52; --soft:#f4ecdf;
+  --red:#ff4757; --blue:#2e6bff; --yellow:#ffbe0b; --purple:#8b5cf6; --green:#10b981; --pink:#ff8fab;
+  --ok:#0f9d6b; --ok-soft:#d9f7ea; --bad:#e23b2e; --bad-soft:#ffe1dc;
+  --bd:2.5px solid var(--ink); --sh:4px 4px 0 var(--ink); --sh-sm:3px 3px 0 var(--ink);
+  --hdr:68px; --r:20px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.02em}
+code{background:var(--soft);padding:1px 6px;border-radius:6px;font-size:.9em}
+.mono{font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:0;z-index:30;min-height:var(--hdr);display:flex;align-items:center;gap:16px;padding:0 18px;background:#fff;border-bottom:var(--bd)}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;text-align:left;min-width:0}
+.logo{width:40px;height:40px;flex:none}
+.brand b{display:block;font-size:16px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.brand small{display:block;color:var(--muted);font-size:11.5px;font-weight:600;white-space:nowrap}
+.steps{display:flex;gap:6px;margin:0 auto;padding:0;list-style:none;align-items:center}
+.step{white-space:nowrap;display:flex;align-items:center;gap:7px;border:2px solid transparent;background:none;border-radius:999px;padding:4px 12px 4px 4px;font-size:13px;font-weight:700;color:var(--muted);transition:.15s}
+.step:hover{background:var(--soft)}
+.step[aria-current="true"]{background:var(--ink);color:#fff}
+.ring{--p:0;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--red) calc(var(--p)*1%),#e6dccb 0);flex:none}
+.ring span{width:21px;height:21px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:11.5px;font-weight:800;color:var(--ink)}
+.ring.full{background:var(--green)}
+.ring.full span{background:var(--green);color:#fff}
+.navar{display:inline-flex;align-items:center;gap:6px;background:var(--purple);color:#fff;border:var(--bd);box-shadow:var(--sh-sm);border-radius:999px;padding:6px 14px;font-weight:800;font-size:13px;white-space:nowrap}
+.navar:active{transform:translate(3px,3px);box-shadow:none}
+.navar[aria-current="true"]{background:var(--ink)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;background:#fff;white-space:nowrap}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:#bbb}
+.chip.ai-on .dot{background:var(--green);box-shadow:0 0 0 3px var(--ok-soft)}
+.chip.ai-sim .dot{background:var(--yellow)}
+.overall{position:absolute;left:0;bottom:-2.5px;height:4px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--blue),var(--purple),var(--green));transition:width .5s;width:0}
+
+main{min-height:calc(100dvh - var(--hdr))}
+.view{display:none}
+.view.active{display:block}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:var(--bd);background:var(--blue);color:#fff;border-radius:14px;padding:11px 18px;font-weight:800;font-size:14.5px;box-shadow:var(--sh-sm);transition:transform .08s,box-shadow .08s}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn.yellow{background:var(--yellow);color:var(--ink)}
+.btn.red{background:var(--red)}
+.btn.purple{background:var(--purple)}
+.btn.green{background:var(--green)}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:11px;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue);text-decoration:underline;font-weight:700;font-size:13px}
+
+/* ---------- home ---------- */
+.home{max-width:1200px;margin:0 auto;padding:40px 22px 70px}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:44px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:800}
+.hero h1{font-size:clamp(38px,5.4vw,66px);font-weight:800;margin:16px 0 14px;letter-spacing:-.035em}
+.hero h1 .hl{background:var(--red);color:#fff;padding:0 10px;border-radius:14px;display:inline-block;transform:rotate(-2deg)}
+.hero h1 .hl2{background:var(--blue);color:#fff;padding:0 10px;border-radius:14px;display:inline-block;transform:rotate(1.5deg)}
+.lead{font-size:17px;color:#3b372f;max-width:600px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.tile{grid-column:span 2;border:var(--bd);box-shadow:var(--sh);border-radius:var(--r);padding:16px 14px 14px;text-align:left;transition:transform .15s;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}
+.tile:nth-child(4){grid-column:2/span 2}
+.tile:hover{transform:translateY(-4px) rotate(-1deg)}
+.tile svg{width:64px;height:44px;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:4px}
+.tile b{font-size:17px;display:block;margin-top:10px}
+.tile small{font-size:12px;font-weight:700;opacity:.85}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:54px}
+.feat{background:#fff;border:var(--bd);box-shadow:var(--sh);border-radius:var(--r);padding:20px}
+.feat .ico{width:46px;height:46px;border-radius:14px;border:2px solid var(--ink);display:grid;place-items:center;font-size:22px;margin-bottom:12px}
+.feat h3{font-size:18px;margin-bottom:6px}
+.feat p{margin:0;color:#3b372f;font-size:14px}
+.flowbox{margin-top:22px;background:#fff;border:var(--bd);box-shadow:var(--sh);border-radius:var(--r);padding:20px 22px}
+.flowbox h3{font-size:18px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px;padding:0;list-style:none}
+.flow li{border:2px solid var(--ink);border-radius:16px;padding:12px;background:var(--soft)}
+.flow li b{display:block;font-size:14px}
+.flow li span{font-size:12.5px;color:#3b372f}
+.flow li i{font-style:normal;font-weight:800;font-size:12px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:1px 8px;float:right}
+.quote{border-left:5px solid var(--red);padding:2px 0 2px 14px;margin:18px 0;font-size:15px;color:#3b372f}
+.quote b{display:block;font-size:20px;color:var(--ink);letter-spacing:-.01em}
+
+/* ---------- learning slides ---------- */
+.learn{display:grid;grid-template-columns:minmax(0,1fr) 410px;grid-template-rows:minmax(0,1fr) auto;gap:14px;padding:14px 16px 12px;height:calc(100dvh - var(--hdr))}
+.stagecard{--tint:#fff3e6;position:relative;border:var(--bd);box-shadow:var(--sh);border-radius:24px;overflow:hidden;background:radial-gradient(120% 100% at 50% 30%,#fff 0,var(--tint) 75%);min-height:0}
+.stage{position:absolute;inset:0;touch-action:none}
+.stage canvas{display:block;width:100%!important;height:100%!important;outline:none}
+.stage.grabbing,.stage.grabbing canvas{cursor:grabbing!important}
+.stage-tools{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:7px;align-items:center;pointer-events:none;flex-wrap:wrap}
+.stage-tools > *{pointer-events:auto}
+.tool{display:inline-flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--ink);border-radius:11px;padding:5px 10px;font-size:12.5px;font-weight:800}
+.tool:hover{background:var(--soft)}
+.tool svg{width:15px;height:15px}
+.tool.ar{background:var(--purple);color:#fff}
+.tool.ar[data-supported="false"]{background:#fff;color:var(--muted)}
+.stage-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;white-space:nowrap;pointer-events:none;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.live{position:absolute;left:12px;bottom:48px;background:#fff;border:2px solid var(--ink);box-shadow:var(--sh-sm);border-radius:16px;padding:10px 13px;max-width:min(380px,calc(100% - 24px));font-size:13px}
+.live:empty{display:none}
+.live .mono{color:var(--muted);font-size:10.5px;display:block;margin-bottom:2px}
+.live b{font-size:16px;letter-spacing:-.01em}
+.live p{margin:4px 0 0;color:#3b372f;font-size:12.5px}
+.slidecard{border:var(--bd);box-shadow:var(--sh);border-radius:24px;background:#fff;overflow:auto;padding:22px 22px 26px;min-height:0}
+.stag{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;background:var(--c,var(--yellow));color:var(--fg,var(--ink))}
+.slidecard h2{font-size:32px;font-weight:800;margin:12px 0 2px}
+.slidecard .idn{font-weight:700;color:var(--muted);font-size:15px}
+.def{font-size:15.5px;margin:12px 0 0;color:#26231e}
+.keybox{margin-top:14px;background:var(--tintc,var(--soft));border:2px solid var(--ink);border-radius:16px;padding:12px 14px;font-size:13.5px}
+.keybox b:first-child{display:block;font-size:13px;margin-bottom:3px}
+.exlist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
+.exlist li{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--ink);border-radius:14px;padding:9px 12px;font-size:13.5px;background:#fff}
+.exlist li span{font-size:18px;line-height:1.2}
+.sec{margin-top:18px}
+.sec > .mono{display:block;margin-bottom:10px;color:var(--muted)}
+.mission{margin-top:14px;border:2px solid var(--ink);background:#fff4cc;border-radius:16px;padding:12px 14px;box-shadow:var(--sh-sm)}
+.mission .mtag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.mission p{margin:4px 0 0;font-size:14px}
+.mission .sub{margin-top:8px;display:grid;gap:5px;font-size:12.5px}
+.mission .sub span{display:flex;gap:8px;align-items:center}
+.mission .sub i{width:15px;height:15px;border-radius:50%;border:2px solid var(--ink);flex:none;background:#fff}
+.mission .sub i.ok{background:var(--green)}
+.mission.done{background:var(--ok-soft)}
+.mission.done .mtag{color:var(--ok)}
+.ctls{display:grid;gap:14px}
+.ctl{display:grid;gap:6px;font-size:13.5px}
+.ctl-l{display:flex;justify-content:space-between;align-items:baseline;font-weight:700}
+.ctl-l output{font-size:12px;font-weight:800;background:var(--soft);border-radius:8px;padding:1px 7px}
+input[type=range]{width:100%;accent-color:var(--blue);height:24px;margin:0}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{width:34px;height:34px;border-radius:10px;border:2px solid var(--ink);padding:0}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--ink)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--soft);padding:4px;border-radius:13px;border:2px solid var(--ink)}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:7px 10px;font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg button:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.tgl{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:700;cursor:pointer}
+.tgl input{appearance:none;width:42px;height:24px;border-radius:999px;background:#e6dccb;border:2px solid var(--ink);position:relative;transition:.2s;margin:0;flex:none;cursor:pointer}
+.tgl input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--ink);box-sizing:border-box;transition:.2s}
+.tgl input:checked{background:var(--green)}
+.tgl input:checked::after{left:20px}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.snav{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
+.ptiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.ptile{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--ink);border-radius:14px;padding:8px 10px;font-size:13px;font-weight:700}
+.ptile svg{width:40px;height:28px;background:#fff;border-radius:7px;border:2px solid var(--ink);padding:2px;flex:none}
+.ptile small{display:block;font-weight:600;font-size:11.5px}
+.strip{grid-column:1/-1;display:flex;align-items:center;gap:10px}
+.thumbs{display:flex;gap:7px;overflow-x:auto;flex:1;padding:4px 4px 6px;scrollbar-width:thin}
+.thumb{flex:none;min-width:66px;height:46px;border:2px solid var(--ink);border-radius:12px;background:var(--c,#fff);color:var(--fg,var(--ink));font-size:11px;font-weight:800;line-height:1.1;padding:4px 8px;position:relative;transition:transform .12s}
+.thumb small{display:block;font-weight:700;font-size:10px;opacity:.9}
+.thumb[aria-current="true"]{transform:translateY(-3px);box-shadow:3px 3px 0 var(--ink)}
+.thumb:not([aria-current="true"]){opacity:.72}
+.thumb .ck{position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;background:var(--green);border:2px solid var(--ink);color:#fff;font-size:10px;display:grid;place-items:center}
+.counter{font-weight:800;font-size:13px;white-space:nowrap}
+
+/* ---------- AR scan ---------- */
+.arv{max-width:1200px;margin:0 auto;padding:18px 16px 60px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
+.arcam{position:relative;border:var(--bd);box-shadow:var(--sh);border-radius:24px;overflow:hidden;background:#151515;height:min(72dvh,640px);isolation:isolate}
+.arcam > video{object-fit:cover}
+.arstart{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#fff;padding:24px;background:radial-gradient(circle at 30% 20%,#3b2a7a,#151515 70%);z-index:5}
+.arstart h3{font-size:26px;margin:12px 0 8px}
+.arstart p{color:#d8d3ff;font-size:14px;max-width:420px;margin:0 auto 18px}
+.arframe{position:absolute;left:50%;top:46%;width:min(62%,340px);aspect-ratio:1;transform:translate(-50%,-50%);border:4px dashed rgba(255,255,255,.85);border-radius:24px;z-index:4;pointer-events:none;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.04);border-color:var(--yellow)}}
+.arstatus{position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;gap:8px;z-index:6;pointer-events:none}
+.arstatus > *{pointer-events:auto}
+.arpill{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:800}
+.arsheet{background:#fff;border:var(--bd);box-shadow:var(--sh);border-radius:24px;padding:20px}
+.arsheet .live{position:static;box-shadow:none;margin-top:12px;max-width:none}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.cards figure{margin:0;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#fff}
+.cards img{width:100%;display:block}
+.cards figcaption{font-size:10.5px;font-weight:800;text-align:center;padding:3px;border-top:2px solid var(--ink)}
+.howto{margin:12px 0 0;padding-left:20px;font-size:13.5px;display:grid;gap:5px}
+.err{background:var(--bad-soft);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-size:13.5px;margin-top:12px}
+
+/* ---------- challenge ---------- */
+.chal{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:14px;padding:14px 16px;height:calc(100dvh - var(--hdr))}
+.chal .stagecard{--tint:#eef3ff;min-height:320px}
+.chal .slidecard{padding-top:20px}
+.scen{position:absolute;left:12px;top:12px;right:12px;pointer-events:none}
+.scen .card{pointer-events:auto;display:inline-block;background:#fff;border:2px solid var(--ink);box-shadow:var(--sh-sm);border-radius:16px;padding:10px 14px;max-width:560px}
+.scen .card b{font-size:17px;display:block}
+.scen .card p{margin:2px 0 0;font-size:13px;color:#3b372f}
+.src{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
+.src i{width:8px;height:8px;border-radius:50%;background:var(--yellow);border:1.5px solid var(--ink)}
+.src.ai i{background:var(--green)}
+.loading{position:absolute;inset:0;display:none;place-items:center;background:rgba(255,248,236,.7);backdrop-filter:blur(2px);font-size:14px;font-weight:800;z-index:3}
+.loading.on{display:grid}
+.spinner{width:34px;height:34px;border-radius:50%;border:4px solid #e6dccb;border-top-color:var(--purple);animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{border:2px solid var(--ink);background:#fff;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.qbox{margin-top:18px;padding-top:16px;border-top:2px dashed var(--ink)}
+.qbox h3{font-size:18px}
+.answers{display:grid;gap:8px;margin-top:14px}
+.ans{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:9px 12px;font-size:14.5px;font-weight:800;transition:transform .08s}
+.ans:hover:not(:disabled){transform:translateX(3px);background:var(--soft)}
+.ans svg{width:40px;height:28px;flex:none;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:2px}
+.ans small{color:var(--muted);font-weight:700;margin-left:auto;font-size:12px}
+.ans.right{background:var(--ok-soft)}
+.ans.wrong{background:var(--bad-soft)}
+.ans:disabled{cursor:default}
+.fb{margin-top:14px;border:2px solid var(--ink);border-radius:16px;padding:12px 14px;font-size:14px;display:none}
+.fb.on{display:block}
+.fb.ok{background:var(--ok-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb b{display:block;font-size:15px;margin-bottom:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.stat{border:2px solid var(--ink);border-radius:14px;padding:10px;background:var(--soft)}
+.stat b{font-size:22px;display:block;letter-spacing:-.02em}
+.stat small{font-size:11.5px;color:var(--muted);font-weight:700}
+details.spec{margin-top:16px;font-size:12.5px}
+details.spec summary{cursor:pointer;color:var(--muted);font-weight:700}
+details.spec pre{background:#151515;color:#f1ece2;border-radius:14px;padding:12px;overflow:auto;max-height:260px;font-size:11.5px;line-height:1.45}
+
+/* ---------- quiz ---------- */
+.quiz{max-width:760px;margin:0 auto;padding:36px 18px 70px}
+.qcard{background:#fff;border:var(--bd);box-shadow:var(--sh);border-radius:24px;padding:26px}
+.qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.qbar{height:12px;background:var(--soft);border:2px solid var(--ink);border-radius:999px;overflow:hidden;margin-bottom:22px}
+.qbar i{display:block;height:100%;background:var(--purple);transition:width .3s}
+.qfig{background:var(--soft);border:2px solid var(--ink);border-radius:16px;display:grid;place-items:center;padding:14px;margin:14px 0}
+.qfig svg{width:100%;max-width:360px;height:auto}
+.qopts{display:grid;gap:8px}
+.result{text-align:center}
+.score{font-size:80px;font-weight:800;letter-spacing:-.05em;line-height:1}
+.score small{font-size:26px;color:var(--muted)}
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:22px 0;text-align:left}
+.rgrid div{border:2px solid var(--ink);border-radius:14px;padding:10px;font-size:12px;background:var(--c,#fff)}
+.rgrid b{display:block;font-size:13px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;text-align:left}
+
+/* ---------- misc ---------- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:14px;border:2px solid var(--ink);font-size:14px;font-weight:700;opacity:0;transition:.3s;z-index:200;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:var(--green)}
+.modal{position:fixed;inset:0;background:rgba(21,21,21,.45);display:none;place-items:center;z-index:150;padding:20px}
+.modal.on{display:grid}
+.modal .box{background:#fff;border:var(--bd);box-shadow:6px 6px 0 var(--ink);border-radius:24px;max-width:640px;width:100%;max-height:85vh;overflow:auto;padding:26px;position:relative}
+.modal h3{font-size:22px;margin-bottom:10px}
+.modal p,.modal li{font-size:14px;color:#3b372f}
+.modal .close{position:absolute;top:14px;right:14px;border:2px solid var(--ink);background:var(--yellow);width:34px;height:34px;border-radius:50%;font-size:18px;font-weight:800}
+.arch{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0}
+.arch div{background:var(--soft);border:2px solid var(--ink);border-radius:12px;padding:10px;font-size:12px;text-align:center}
+.arch b{display:block;font-size:12.5px}
+#arOverlay{position:fixed;inset:0;pointer-events:none;display:none;z-index:100}
+#arOverlay.on{display:block}
+#arOverlay .bar{pointer-events:auto;position:absolute;left:12px;right:12px;bottom:18px;background:#fff;border:var(--bd);border-radius:18px;padding:12px;display:grid;gap:10px}
+#arOverlay .bar b{font-size:14px}
+#arOverlay .bar .row button{background:var(--yellow);border:2px solid var(--ink);border-radius:10px;padding:8px 12px;font-weight:800;font-size:13px}
+#arOverlay .bar .row button.x{background:var(--red);color:#fff}
+.fatal{max-width:560px;margin:80px auto;padding:24px;background:#fff;border:var(--bd);border-radius:20px}
+
+@media (max-width:1180px){
+  .learn,.chal{grid-template-columns:minmax(0,1fr) 360px}
+}
+@media (max-width:1340px){
+  .step .lbl{display:none}
+  .step{padding:4px}
+}
+@media (max-width:920px){
+  header.top{flex-wrap:wrap;gap:8px 12px;padding:8px 12px}
+  .steps{order:3;width:100%;justify-content:space-between;margin:0}
+  .brand small{display:none}
+  .hero{grid-template-columns:1fr;gap:28px}
+  .feats{grid-template-columns:1fr;margin-top:32px}
+  .flow{grid-template-columns:1fr 1fr}
+  .learn,.chal{display:flex;flex-direction:column;height:auto;padding:10px 10px 0}
+  .stagecard{height:50dvh;min-height:300px;flex:none}
+  .slidecard{overflow:visible}
+  .strip{position:sticky;bottom:0;background:var(--bg);padding:8px 0 10px;border-top:2px solid var(--ink);margin:0 -10px;padding-left:10px;padding-right:10px;order:3}
+  .strip .counter{display:none}
+  .arv{grid-template-columns:1fr;padding:10px 10px 50px}
+  .arcam{height:62dvh}
+  .cards{grid-template-columns:repeat(5,1fr);gap:5px}
+  .rgrid{grid-template-columns:repeat(2,1fr)}
+  .summary{grid-template-columns:1fr}
+  .arch{grid-template-columns:1fr 1fr}
+  .live p{display:none}
+}
+@media (max-width:560px){
+  .hdr-right .chip.timer{display:none}
+  .tiles{gap:10px}
+  .tile{min-height:120px;padding:12px}
+  .tile b{font-size:15px}
+  .slidecard h2{font-size:26px}
+  .navar span{display:none}
+}
+</style>
+<script>
+  /* ===== KONFIGURASI GenAI untuk hosting publik =====
+     Isi dengan URL Cloudflare Worker kamu, contoh:
+     window.GESTALT_AI_ENDPOINT = 'https://gestalt-ai.namakamu.workers.dev';
+     Biarkan kosong ('') untuk memakai mode simulasi. */
+  window.GESTALT_AI_ENDPOINT = '';
+</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header class="top">
+  <button class="brand" data-go="intro" aria-label="Beranda">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="#ffbe0b" stroke="#151515" stroke-width="2.5"/><circle cx="13" cy="14" r="3.6" fill="#ff4757" stroke="#151515" stroke-width="1.8"/><circle cx="13" cy="26" r="3.6" fill="#2e6bff" stroke="#151515" stroke-width="1.8"/><path d="M26 9.5a10.5 10.5 0 1 1 0 21" stroke="#151515" stroke-width="3.2" fill="none" stroke-dasharray="4.5 3.2" stroke-linecap="round"/></svg>
+    <span><b>Gestalt Explorer</b><small>Understanding Visual Perception</small></span>
+  </button>
+  <ol class="steps" id="steps"></ol>
+  <div class="hdr-right">
+    <button class="navar" id="navAR" data-go="ar" title="Scan kartu AR">📱 <span>AR Scan</span></button>
+    <span class="chip timer" title="Waktu belajar (target 15–20 menit)">⏱ <span id="timer">00:00</span></span>
+    <button class="chip" id="aiChip" title="Status GenAI"><span class="dot"></span><span id="aiChipTxt">Memeriksa GenAI…</span></button>
+  </div>
+  <div class="overall" id="overall"></div>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section class="view active" id="v-intro">
+    <div class="home">
+      <div class="hero">
+        <div>
+          <span class="tag">🎨 Desain Komunikasi Visual · Persepsi Visual</span>
+          <h1>Belajar <span class="hl">Gestalt</span> jadi <span class="hl2">interaktif</span> &amp; seru!</h1>
+          <p class="lead">Geser, warnai, putar, dan pindai objek 3D untuk melihat sendiri bagaimana otak <b>mengelompokkan</b>, <b>melengkapi</b>, dan <b>memisahkan</b> apa yang kita lihat. Dilengkapi slide 3D, kartu AR, dan latihan yang dibuat GenAI.</p>
+          <div class="quote"><b>“Keseluruhan berbeda dari jumlah bagian-bagiannya.”</b>Gagasan inti psikologi Gestalt (Wertheimer, Köhler, Koffka)</div>
+          <div class="cta">
+            <button class="btn yellow" id="startBtn">Mulai belajar →</button>
+            <button class="btn purple" data-go="ar">📱 Scan kartu AR</button>
+            <button class="btn ghost" data-modal="about">Tentang media</button>
+          </div>
+        </div>
+        <div class="tiles" id="tiles"></div>
+      </div>
+
+      <div class="feats">
+        <div class="feat"><div class="ico" style="background:var(--blue)">🧊</div><h3>Slide 3D interaktif</h3><p>Setiap prinsip punya slide <b>Kenali</b> dan <b>Coba</b>. Objek 3D bisa diputar, di-zoom, dan dimanipulasi langsung untuk menyelesaikan misi.</p></div>
+        <div class="feat"><div class="ico" style="background:var(--purple)">📱</div><h3>AR Scan kartu</h3><p>Cetak 5 kartu Gestalt, arahkan kamera HP (Android atau iPhone), dan objek 3D muncul di atas kartu, lengkap dengan kontrolnya.</p></div>
+        <div class="feat"><div class="ico" style="background:var(--green)">✦</div><h3>AI Visual Challenge</h3><p>GenAI membuat variasi latihan visual yang berbeda setiap kali, lengkap dengan umpan balik dan penjelasan.</p></div>
+      </div>
+
+      <div class="flowbox">
+        <h3>⏱ Alur belajar ±15–20 menit</h3>
+        <ol class="flow">
+          <li><i>2′</i><b>1 · Pengantar</b><span>Apa itu Gestalt dan cara memakai media.</span></li>
+          <li><i>5′</i><b>2 · Eksplorasi</b><span>Buka slide “Kenali” kelima prinsip.</span></li>
+          <li><i>5′</i><b>3 · Manipulasi</b><span>Selesaikan misi di slide “Coba” atau lewat AR Scan.</span></li>
+          <li><i>4′</i><b>4 · AI Challenge</b><span>Kenali prinsip pada latihan buatan GenAI (min. 3).</span></li>
+          <li><i>3′</i><b>5 · Evaluasi</b><span>Kuis 7 soal dan ringkasan pemahaman.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LEARNING SLIDES ================= -->
+  <section class="view" id="v-room">
+    <div class="learn">
+      <div class="stagecard" id="stageCard">
+        <div class="stage" id="roomStage"></div>
+        <div class="stage-tools">
+          <button class="tool" id="camReset" title="Kembalikan sudut pandang"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v3h3"/></svg>Reset</button>
+          <button class="tool" id="viewFlat" title="Tampilan lurus (2D)">2D</button>
+          <button class="tool" id="viewTilt" title="Tampilan miring (3D)">3D</button>
+          <span style="flex:1"></span>
+          <button class="tool ar" id="arBtn" data-supported="unknown" title="AR tanpa kartu (WebXR)">🥽 AR ruang</button>
+        </div>
+        <div class="live" id="live"></div>
+        <div class="stage-hint" id="roomHint">Seret latar untuk memutar · scroll untuk zoom</div>
+      </div>
+      <aside class="slidecard" id="slideCard"></aside>
+      <div class="strip">
+        <button class="btn ghost sm" id="prevSlide" aria-label="Slide sebelumnya">←</button>
+        <div class="thumbs" id="thumbs"></div>
+        <span class="counter" id="counter"></span>
+        <button class="btn sm" id="nextSlide" aria-label="Slide berikutnya">→</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AR SCAN ================= -->
+  <section class="view" id="v-ar">
+    <div class="arv">
+      <div class="arcam" id="arCam">
+        <div class="arstart" id="arStart">
+          <div>
+            <div style="font-size:54px">📱</div>
+            <h3>AR Scan Kartu Gestalt</h3>
+            <p>Arahkan kamera ke salah satu dari 5 kartu. Objek 3D akan muncul di atas kartu dan bisa kamu sentuh, geser, dan atur.</p>
+            <button class="btn yellow" id="arGo">Nyalakan kamera</button>
+            <div class="err" id="arErr" hidden style="color:var(--ink);text-align:left;margin-top:16px"></div>
+          </div>
+        </div>
+      </div>
+      <aside class="arsheet" id="arSheet">
+        <span class="stag" style="--c:var(--purple);--fg:#fff">📱 AR Scan</span>
+        <h2 style="font-size:26px;margin:10px 0 4px" id="arSheetTitle">Belum ada kartu terdeteksi</h2>
+        <p class="hint" id="arSheetHint" style="margin-top:0">Siapkan kartu: cetak PDF kartu, atau tampilkan gambar kartu di layar laptop lalu pindai dengan HP.</p>
+        <div id="arPanel"></div>
+        <div id="arPrep">
+          <div class="cards" id="cardGallery"></div>
+          <ol class="howto">
+            <li>Buka media ini di HP lewat link publik (HTTPS), lalu izinkan kamera.</li>
+            <li>Pegang HP ±20–40 cm dari kartu, di tempat yang cukup terang.</li>
+            <li>Sentuh objek atau pakai kontrol di panel ini untuk menyelesaikan misi.</li>
+          </ol>
+        </div>
+        <div class="row" style="margin-top:14px"><button class="btn ghost sm" id="arStop" hidden>⏹ Matikan kamera</button><button class="btn ghost sm" data-go="room">← Kembali ke slide</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= CHALLENGE ================= -->
+  <section class="view" id="v-chal">
+    <div class="chal">
+      <div class="stagecard" id="chalWrap">
+        <div class="stage" id="chalStage"></div>
+        <div class="scen"><div class="card" id="scenCard"><span class="src" id="srcTag"><i></i><span>Belum ada tantangan</span></span><b id="scenTitle">AI Visual Challenge</b><p id="scenText">Pilih prinsip target (atau “Acak”), lalu tekan <b>Buat tantangan</b>.</p></div></div>
+        <div class="stage-hint">Putar &amp; zoom komposisi untuk mengamatinya dari berbagai sudut</div>
+        <div class="loading" id="chalLoading"><div><div class="spinner"></div><span id="loadingTxt">GenAI sedang menyusun latihan…</span></div></div>
+      </div>
+      <aside class="slidecard">
+        <span class="stag" style="--c:var(--green)">✦ Tahap 4</span>
+        <h2>AI Visual Challenge</h2>
+        <p class="def">GenAI membuat komposisi baru beserta konteks desain, pertanyaan, dan penjelasan. Tugasmu: kenali prinsip Gestalt yang <b>paling dominan</b>.</p>
+        <div class="sec"><span class="mono">Prinsip target</span><div class="chips" id="targetChips"></div>
+          <p class="hint">Mode <b>Acak</b> bersifat adaptif: prinsip yang sering salah kamu jawab akan lebih sering muncul.</p></div>
+        <div class="sec" id="srcSec"><span class="mono">Sumber generator</span><div class="seg" id="srcSeg"></div><p class="hint" id="srcNote"></p></div>
+        <div class="row" style="margin-top:16px"><button class="btn green" id="genBtn">✦ Buat tantangan</button><button class="btn ghost" data-modal="ai">Cara kerja GenAI</button></div>
+        <div class="qbox" id="qbox" hidden>
+          <h3 id="qText">Prinsip Gestalt apa yang paling dominan?</h3>
+          <div class="answers" id="answers"></div>
+          <button class="linkbtn" id="hintBtn" style="margin-top:10px">💡 Tampilkan petunjuk</button>
+          <p class="hint" id="hintText" hidden></p>
+          <div class="fb" id="fb"></div>
+          <div class="row" style="margin-top:12px" id="nextRow" hidden><button class="btn" id="nextBtn">Tantangan baru →</button></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="stAns">0</b><small>dijawab (target 3)</small></div>
+          <div class="stat"><b id="stOk">0</b><small>benar</small></div>
+          <div class="stat"><b id="stAcc">–</b><small>akurasi</small></div>
+        </div>
+        <details class="spec" id="specBox" hidden><summary>Lihat spesifikasi yang dihasilkan (JSON)</summary><pre id="specPre"></pre></details>
+        <div class="snav"><button class="btn ghost sm" data-go="room">← Slide belajar</button><button class="btn sm" data-go="quiz">Lanjut ke Evaluasi →</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ ================= -->
+  <section class="view" id="v-quiz"><div class="quiz" id="quiz"></div></section>
+</main>
+
+<div id="arOverlay"><div class="bar"><div><b id="arTitle">Mode AR</b><br><small>Ketuk objek untuk berinteraksi.</small></div><div class="row" id="arActions"></div></div></div>
+
+<div class="modal" id="m-about"><div class="box"><button class="close" data-close>×</button>
+  <h3>Tentang Gestalt Explorer</h3>
+  <p>Media pembelajaran mandiri untuk mahasiswa Desain Komunikasi Visual pada materi <b>Prinsip Gestalt dalam Persepsi Visual</b>: Proximity, Similarity, Closure, Continuity, dan Figure-Ground.</p>
+  <ul>
+    <li><b>Slide 3D interaktif (Three.js/WebGL):</b> setiap prinsip punya slide Kenali dan Coba dengan objek 3D yang bisa diputar, di-zoom, dan dimanipulasi.</li>
+    <li><b>AR Scan kartu (MindAR, image tracking):</b> lima kartu cetak menjadi penanda (marker). Kamera HP mendeteksi kartu, lalu ruang 3D muncul di atasnya. Berjalan di browser Android dan iPhone tanpa instal aplikasi.</li>
+    <li><b>AR ruang (WebXR):</b> opsi tambahan tanpa kartu untuk perangkat yang mendukung <code>immersive-ar</code>.</li>
+    <li><b>GenAI:</b> AI Challenge menghasilkan variasi komposisi, konteks desain, pertanyaan, dan penjelasan secara dinamis.</li>
+  </ul>
+</div></div>
+
+<div class="modal" id="m-ai"><div class="box"><button class="close" data-close>×</button>
+  <h3>Cara kerja GenAI di AI Challenge</h3>
+  <div class="arch"><div><b>1 · Prompt</b>prinsip target, riwayat, prinsip lemah</div><div><b>2 · GenAI</b>mengembalikan spesifikasi JSON</div><div><b>3 · Validasi</b>parameter dibatasi &amp; diperiksa</div><div><b>4 · Render 3D</b>komposisi dibangun dari parameter</div></div>
+  <p>GenAI tidak menggambar piksel. Ia memilih <b>prinsip, varian komposisi, dan parameter visual</b> (jumlah kelompok, jarak, palet, besar celah, pola), lalu menulis skenario desain, pertanyaan, petunjuk, dan penjelasan. Spesifikasi itu divalidasi dan dirender menjadi objek 3D, sehingga setiap latihan tetap <b>akurat secara konsep</b>.</p>
+  <ul>
+    <li><b>Claude (GenAI)</b>: aktif saat halaman dibuka melalui Claude, lewat runtime aman milik platform (tanpa API key di halaman).</li>
+    <li><b>Backend API</b>: saat di-hosting publik, halaman memanggil Cloudflare Worker yang menyimpan API key di server dan menyusun prompt ke model Gemini.</li>
+    <li><b>Mode simulasi</b>: jika GenAI tidak tersedia, generator lokal membuat variasi dengan skema JSON yang sama. Label sumber selalu ditampilkan.</li>
+  </ul>
+  <p id="aiStatusLine" style="margin-bottom:0"></p>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* =========================================================
+   Utilities
+   ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const rad = d => d * Math.PI / 180;
+const deg = r => r * 180 / Math.PI;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const rndi = (a, b) => Math.floor(rnd(a, b + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const num = (v, d = 2) => Number(v).toFixed(d).replace('.', ',');
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+
+function h(tag, attrs = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+    else if (v === true) el.setAttribute(k, '');
+    else if (v !== false && v != null) el.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(kid));
+  }
+  return el;
+}
+
+const C = {
+  ink: '#151515', paper: '#fff8ec', board: '#efe6d6', white: '#fffdf7', grey: '#a8a196', lgrey: '#d9d2c5',
+  accent: '#ff4757', red: '#ff4757', blue: '#2e6bff', teal: '#10b981', green: '#10b981', yellow: '#ffbe0b', purple: '#8b5cf6'
+};
+const PCOL = { proximity: '#ff4757', similarity: '#2e6bff', closure: '#ffbe0b', continuity: '#8b5cf6', 'figure-ground': '#10b981', intro: '#ffbe0b' };
+const PFG = { proximity: '#ffffff', similarity: '#ffffff', closure: '#151515', continuity: '#ffffff', 'figure-ground': '#151515', intro: '#151515' };
+const PTINT = { proximity: '#ffe3e6', similarity: '#e3ebff', closure: '#fff4d6', continuity: '#eee6ff', 'figure-ground': '#dcf5ec', intro: '#fff1d6' };
+
+function hexToRgb(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function luminance(hex) {
+  const rgb = hexToRgb(hex) || [0, 0, 0];
+  const [r, g, b] = rgb.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+function contrast(a, b) {
+  const la = luminance(a), lb = luminance(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+let toastT;
+function toast(msg, kind = '') {
+  const t = $('#toast');
+  t.textContent = msg; t.className = 'toast on ' + kind;
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 2800);
+}
+
+/* =========================================================
+   Geometry helpers
+   ========================================================= */
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: .45, metalness: .02, ...o });
+const shadowy = m => { m.castShadow = true; m.receiveShadow = true; return m; };
+function extrude(shape, depth = .16, bevel = true) {
+  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: bevel, bevelThickness: .025, bevelSize: .025, bevelSegments: 2, curveSegments: 48 });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+function rrShape(w, h, r) {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2; r = Math.min(r, w / 2, h / 2);
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+function arcShape(r1, r2, a0, a1) {
+  const s = new THREE.Shape();
+  s.absarc(0, 0, r2, a0, a1, false);
+  s.absarc(0, 0, r1, a1, a0, true);
+  s.closePath();
+  return s;
+}
+function pacShape(r, mouthDeg) {
+  const m = rad(mouthDeg) / 2, s = new THREE.Shape();
+  s.moveTo(0, 0); s.lineTo(r * Math.cos(m), r * Math.sin(m));
+  s.absarc(0, 0, r, m, Math.PI * 2 - m, false);
+  s.lineTo(0, 0);
+  return s;
+}
+function triShape(s) {
+  const t = new THREE.Shape();
+  t.moveTo(0, s * .577); t.lineTo(-s / 2, -s * .289); t.lineTo(s / 2, -s * .289); t.closePath();
+  return t;
+}
+/* Rubin vase profile (right contour, top → bottom). Features face the centre: forehead, nose, lips, chin. */
+const VASE_W = 2.4, VASE_H = 2.5;
+function vaseContour() {
+  const P = [[1.5, 2.5], [1.32, 2.2], [.98, 1.9], [.86, 1.55], [.96, 1.3], [.76, 1.05], [.46, .78], [.74, .55], [.6, .38], [.72, .24], [.58, .08], [.82, -.18], [.62, -.5], [.9, -.85], [1.08, -1.4], [1.22, -2.0], [1.5, -2.5]];
+  const curve = new THREE.CatmullRomCurve3(P.map(([x, y]) => new THREE.Vector3(x, y, 0)), false, 'centripetal');
+  return curve.getPoints(110).map(v => [v.x, v.y]);
+}
+function vasePolys() {
+  const R = vaseContour();
+  const vase = [...R, ...R.slice().reverse().map(([x, y]) => [-x, y])];
+  const right = [[VASE_W, VASE_H], ...R, [VASE_W, -VASE_H]];
+  const left = [[-VASE_W, VASE_H], ...R.map(([x, y]) => [-x, y]), [-VASE_W, -VASE_H]];
+  return { vase, left, right };
+}
+const polyShape = pts => new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y)));
+
+/* =========================================================
+   Stage: Three.js scene + direct manipulation + WebXR AR
+   ========================================================= */
+class Stage {
+  constructor(host, ext = null) {
+    this.host = host; this.ext = ext; this.active = true;
+    if (ext) {
+      this.renderer = ext.renderer; this.scene = ext.scene; this.camera = ext.camera;
+      this.controls = { enabled: true, update() {}, target: new THREE.Vector3() };
+      this.root = new THREE.Group(); this.root.position.z = .02; ext.parent.add(this.root);
+      this.initCommon();
+      return;
+    }
+    const r = this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+    r.outputColorSpace = THREE.SRGBColorSpace;
+    r.xr.enabled = true;
+    host.appendChild(r.domElement);
+
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(36, 1, .01, 200);
+    this.controls = new OrbitControls(this.camera, r.domElement);
+    Object.assign(this.controls, { enableDamping: true, dampingFactor: .08, minDistance: 4, maxDistance: 30, enablePan: false, rotateSpeed: .8 });
+    this.controls.minPolarAngle = .15; this.controls.maxPolarAngle = Math.PI - .15;
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xd6d0c4, 1.15);
+    const dir = new THREE.DirectionalLight(0xffffff, 1.55);
+    dir.position.set(-4, 6, 10); dir.castShadow = true; dir.shadow.mapSize.set(1024, 1024);
+    Object.assign(dir.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
+    dir.shadow.bias = -.0005; dir.shadow.radius = 4;
+    this.scene.add(hemi, dir);
+
+    this.root = new THREE.Group(); this.scene.add(this.root);
+    this.initCommon();
+    new ResizeObserver(() => this.resize()).observe(host);
+    this.resize();
+    r.setAnimationLoop(() => this.loop());
+    this.setupXRController();
+  }
+  initCommon() {
+    const host = this.host;
+    this.board = new THREE.Mesh(new THREE.PlaneGeometry(this.ext ? 14 : 60, this.ext ? 9 : 40), new THREE.MeshStandardMaterial({ color: C.board, roughness: 1 }));
+    this.board.position.z = -.32; this.board.receiveShadow = true;
+    this.content = new THREE.Group();
+    this.root.add(this.board, this.content);
+
+    this.interactives = [];
+    this.tickers = new Set();
+    this.ray = new THREE.Raycaster(); this.ndc = new THREE.Vector2(); this.plane = new THREE.Plane();
+    this.viewW = 12; this.viewH = 8; this.tilt = .16;
+
+    this._h = { d: e => this.down(e), m: e => this.move(e), u: e => this.up(e) };
+    host.addEventListener('pointerdown', this._h.d, true);
+    window.addEventListener('pointermove', this._h.m);
+    window.addEventListener('pointerup', this._h.u);
+    window.addEventListener('pointercancel', this._h.u);
+  }
+  destroy() {
+    this.clear();
+    this.host.removeEventListener('pointerdown', this._h.d, true);
+    window.removeEventListener('pointermove', this._h.m);
+    window.removeEventListener('pointerup', this._h.u);
+    window.removeEventListener('pointercancel', this._h.u);
+    if (this.root.parent) this.root.parent.remove(this.root);
+  }
+  tick() { for (const f of this.tickers) if (f() === false) this.tickers.delete(f); }
+  get visible() { return this.ext ? this.active : this.host.offsetParent !== null; }
+  resize() {
+    if (this.ext) return;
+    const w = this.host.clientWidth, h = this.host.clientHeight;
+    if (!w || !h || this.renderer.xr.isPresenting) return;
+    this.renderer.setSize(w, h, false);
+    this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
+    this.fit();
+  }
+  setView(w, h, tilt = this.tilt) {
+    this.viewW = w; this.viewH = h; this.tilt = tilt;
+    if (this.ext) { this.root.scale.setScalar(1.12 / Math.max(w, h * 1.15)); this.board.scale.set(w * 1.06 / 14, h * 1.06 / 9, 1); return; }
+    this.resetCamera();
+  }
+  resetCamera() {
+    if (this.ext) return;
+    this.controls.target.set(0, 0, 0);
+    this.camera.position.set(0, -this.tilt * 10, 10).normalize();
+    this.fit();
+  }
+  fit() {
+    if (this.ext) return;
+    const t = Math.tan(rad(this.camera.fov) / 2);
+    const dist = Math.max((this.viewH / 2) / t, (this.viewW / 2) / (t * this.camera.aspect)) * 1.08 + .6;
+    const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+    if (!isFinite(dir.x)) dir.set(0, 0, 1);
+    this.camera.position.copy(this.controls.target).addScaledVector(dir, dist);
+    this.controls.maxDistance = dist * 2.2; this.controls.minDistance = dist * .35;
+    this.controls.update();
+  }
+  setBoard(color, visible = true) { this.board.material.color.set(color); this.board.visible = visible; }
+  clear() {
+    this.tickers.clear(); this.interactives.length = 0;
+    for (const c of [...this.content.children]) {
+      c.traverse(o => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose());
+      });
+      this.content.remove(c);
+    }
+    this.drag = null; this.painting = false; this.clicking = null; this.controls.enabled = true;
+  }
+  add(o, interactive = false) { this.content.add(o); if (interactive) this.interactives.push(o); return o; }
+  animate(ms, fn) {
+    const t0 = performance.now();
+    const tick = () => { const k = Math.min(1, (performance.now() - t0) / ms); fn(easeOut(k), k); return k < 1; };
+    this.tickers.add(tick);
+  }
+  pulse(o, amt = .28) { const s0 = o.userData.baseScale || 1; this.animate(320, k => o.scale.setScalar(s0 * (1 + amt * (1 - k)))); }
+  loop() {
+    if (!this.renderer.xr.isPresenting && !this.visible) return;
+    this.tick();
+    if (!this.renderer.xr.isPresenting) this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+  setNDC(e) {
+    const r = this.renderer.domElement.getBoundingClientRect();
+    this.ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    if (this.ext) { this.camera.updateMatrixWorld(); this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert(); }
+    this.ray.setFromCamera(this.ndc, this.camera);
+  }
+  hitTest() {
+    const hits = this.ray.intersectObjects(this.interactives, true);
+    for (const hit of hits) { let o = hit.object; while (o && !o.userData.interactive) o = o.parent; if (o) return { o, point: hit.point }; }
+    return null;
+  }
+  down(e) {
+    if (!this.active) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.target !== this.renderer.domElement) return;
+    this.setNDC(e);
+    const hit = this.hitTest();
+    this.downAt = { x: e.clientX, y: e.clientY };
+    if (!hit) return;
+    const u = hit.o.userData;
+    if (u.draggable) {
+      this.controls.enabled = false;
+      const wp = hit.o.getWorldPosition(new THREE.Vector3());
+      const n = new THREE.Vector3(0, 0, 1).transformDirection(this.root.matrixWorld);
+      this.plane.setFromNormalAndCoplanarPoint(n, wp);
+      const p = new THREE.Vector3(); this.ray.ray.intersectPlane(this.plane, p);
+      this.drag = { o: hit.o, offset: wp.sub(p) };
+      this.host.classList.add('grabbing');
+    } else if (u.paint) {
+      this.controls.enabled = false; this.painting = true; this.lastPainted = hit.o; u.paint(hit.o);
+    } else if (u.onClick) {
+      this.controls.enabled = false; this.clicking = hit.o;
+    }
+  }
+  move(e) {
+    if (!this.active) return;
+    if (this.drag) {
+      this.setNDC(e);
+      const p = new THREE.Vector3();
+      if (!this.ray.ray.intersectPlane(this.plane, p)) return;
+      p.add(this.drag.offset);
+      const o = this.drag.o, local = o.parent.worldToLocal(p), b = o.userData.bounds;
+      o.position.x = b ? clamp(local.x, b.x[0], b.x[1]) : local.x;
+      o.position.y = b ? clamp(local.y, b.y[0], b.y[1]) : local.y;
+      o.userData.onDrag && o.userData.onDrag(o);
+      return;
+    }
+    if (this.painting) {
+      this.setNDC(e); const hit = this.hitTest();
+      if (hit && hit.o !== this.lastPainted && hit.o.userData.paint) { this.lastPainted = hit.o; hit.o.userData.paint(hit.o); }
+      return;
+    }
+    if (!this.ext && e.target === this.renderer.domElement && e.pointerType === 'mouse') {
+      this.setNDC(e); const hit = this.hitTest();
+      this.renderer.domElement.style.cursor = hit ? (hit.o.userData.draggable ? 'grab' : 'pointer') : 'default';
+    }
+  }
+  up(e) {
+    const moved = this.downAt ? Math.hypot(e.clientX - this.downAt.x, e.clientY - this.downAt.y) : 99;
+    if (this.drag) { const o = this.drag.o; if (moved < 5 && o.userData.onClick) o.userData.onClick(o); o.userData.onDrop && o.userData.onDrop(o); this.drag = null; }
+    if (this.clicking) { if (moved < 8) this.clicking.userData.onClick(this.clicking); this.clicking = null; }
+    this.painting = false; this.controls.enabled = true; this.host.classList.remove('grabbing');
+  }
+  setupXRController() {
+    const ctrl = this.renderer.xr.getController(0);
+    this.scene.add(ctrl);
+    ctrl.addEventListener('select', () => {
+      const m = new THREE.Matrix4().extractRotation(ctrl.matrixWorld);
+      this.ray.ray.origin.setFromMatrixPosition(ctrl.matrixWorld);
+      this.ray.ray.direction.set(0, 0, -1).applyMatrix4(m);
+      const hit = this.hitTest(); if (!hit) return;
+      const u = hit.o.userData;
+      if (u.paint) u.paint(hit.o); else if (u.onClick) u.onClick(hit.o);
+    });
+  }
+  async startAR(overlay, onEnd) {
+    const session = await navigator.xr.requestSession('immersive-ar', { optionalFeatures: ['dom-overlay'], domOverlay: { root: overlay } });
+    this.renderer.xr.setReferenceSpaceType('local');
+    await this.renderer.xr.setSession(session);
+    this.root.scale.setScalar(.055); this.root.position.set(0, -.12, -.85);
+    this.board.material.transparent = true; this.board.material.opacity = .5;
+    session.addEventListener('end', () => {
+      this.root.scale.setScalar(1); this.root.position.set(0, 0, 0);
+      this.board.material.opacity = 1; this.board.material.transparent = false;
+      this.resize(); onEnd && onEnd();
+    });
+    return session;
+  }
+}
+
+/* =========================================================
+   App state & progress
+   ========================================================= */
+const KEYS = ['proximity', 'similarity', 'closure', 'continuity', 'figure-ground'];
+const NAMES = { proximity: 'Proximity', similarity: 'Similarity', closure: 'Closure', continuity: 'Continuity', 'figure-ground': 'Figure-Ground' };
+const IDN = { proximity: 'Kedekatan', similarity: 'Kemiripan', closure: 'Ketertutupan', continuity: 'Kesinambungan', 'figure-ground': 'Figur–Latar' };
+
+const S = {
+  started: false, t0: null, view: 'intro', current: 'proximity',
+  visited: new Set(), missions: new Set(),
+  ai: { answered: 0, correct: 0, wrong: Object.fromEntries(KEYS.map(k => [k, 0])), recent: [] },
+  quiz: { done: false, score: 0, per: {} }
+};
+
+const PHASES = [
+  { key: 'intro', label: 'Pengantar', go: 'intro', p: () => S.started ? 1 : 0 },
+  { key: 'explore', label: 'Eksplorasi', go: 'room', p: () => S.visited.size / 5 },
+  { key: 'manip', label: 'Manipulasi', go: 'room', p: () => S.missions.size / 5 },
+  { key: 'ai', label: 'AI Challenge', go: 'chal', p: () => Math.min(S.ai.answered, 3) / 3 },
+  { key: 'eval', label: 'Evaluasi', go: 'quiz', p: () => S.quiz.done ? 1 : 0 }
+];
+
+function renderSteps() {
+  const ol = $('#steps'); ol.innerHTML = '';
+  PHASES.forEach((ph, i) => {
+    const p = Math.round(ph.p() * 100);
+    const cur = S.view === ph.go && (ph.go !== 'room' || ((ph.key === 'explore') === (S.visited.size < 5)));
+    ol.append(h('li', {}, h('button', { class: 'step', 'aria-current': String(cur), title: `${ph.label}: ${p}%`, onclick: () => go(ph.go) },
+      h('span', { class: 'ring' + (p >= 100 ? ' full' : ''), style: `--p:${p}` }, h('span', {}, p >= 100 ? '✓' : String(i + 1))),
+      h('span', { class: 'lbl' }, ph.label))));
+  });
+  const total = PHASES.reduce((a, ph) => a + ph.p(), 0) / PHASES.length;
+  $('#overall').style.width = (total * 100) + '%';
+  const na = $('#navAR'); if (na) na.setAttribute('aria-current', String(S.view === 'ar'));
+}
+
+function go(view) {
+  if (view !== 'intro' && !S.started) startLearning();
+  if (S.view === 'ar' && view !== 'ar') stopScan();
+  S.view = view;
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'v-' + view));
+  if (view === 'room') { ensureRoom(); requestAnimationFrame(() => roomStage.resize()); }
+  if (view === 'ar') buildGallery();
+  if (view === 'chal') { ensureChal(); requestAnimationFrame(() => chalStage.resize()); }
+  if (view === 'quiz') renderQuiz();
+  window.scrollTo({ top: 0 });
+  renderSteps();
+  try { if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view); } catch (e) {}
+}
+
+function startLearning() {
+  if (S.started) return;
+  S.started = true; S.t0 = Date.now();
+  setInterval(() => {
+    const s = Math.floor((Date.now() - S.t0) / 1000);
+    $('#timer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  }, 1000);
+}
+
+/* =========================================================
+   UI control builders
+   ========================================================= */
+function slider({ label, min, max, step, value, fmt = v => v, onInput }) {
+  const out = h('output', {}, fmt(value));
+  const inp = h('input', { type: 'range', min, max, step, value, 'aria-label': label });
+  inp.addEventListener('input', () => { const v = parseFloat(inp.value); out.textContent = fmt(v); onInput(v); });
+  const el = h('label', { class: 'ctl' }, h('span', { class: 'ctl-l' }, label, out), inp);
+  el.set = v => { inp.value = v; out.textContent = fmt(v); };
+  return el;
+}
+function swatches({ label, items, value, onPick }) {
+  const wrap = h('div', { class: 'sw', role: 'group', 'aria-label': label });
+  const set = key => [...wrap.children].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === key)));
+  items.forEach(it => wrap.append(h('button', { 'data-k': it.key, title: it.name, 'aria-label': it.name, style: `background:${it.color}`, onclick: () => { set(it.key); onPick(it.key); } })));
+  set(value);
+  const el = h('div', { class: 'ctl' }, h('span', { class: 'ctl-l' }, label), wrap);
+  el.set = set; return el;
+}
+function seg({ label, items, value, onPick }) {
+  const wrap = h('div', { class: 'seg', role: 'group', 'aria-label': label || '' });
+  const set = key => [...wrap.children].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === key)));
+  items.forEach(it => wrap.append(h('button', { 'data-k': it.key, onclick: () => { set(it.key); onPick(it.key); } }, it.name)));
+  set(value);
+  const el = label ? h('div', { class: 'ctl' }, h('span', { class: 'ctl-l' }, label), wrap) : wrap;
+  el.set = set; return el;
+}
+function toggle({ label, value, onChange }) {
+  const inp = h('input', { type: 'checkbox' }); inp.checked = !!value;
+  inp.addEventListener('change', () => onChange(inp.checked));
+  return h('label', { class: 'tgl' }, h('span', {}, label), inp);
+}
+const buttons = list => h('div', { class: 'row' }, list.map(b => h('button', { class: 'btn ghost sm', onclick: b.fn }, b.label)));
+
+/* =========================================================
+   Principle icons (SVG)
+   ========================================================= */
+const ICON = {
+  proximity: `<svg viewBox="0 0 60 40"><g fill="#151515">${[8, 16].map(x => [10, 20, 30].map(y => `<circle cx="${x}" cy="${y}" r="3.2"/>`).join('')).join('')}${[38, 46, 54].map(x => [10, 20, 30].map(y => `<circle cx="${x}" cy="${y}" r="3.2" fill="#ff4757"/>`).join('')).join('')}</g></svg>`,
+  similarity: `<svg viewBox="0 0 60 40">${[10, 22, 34, 46].map((x, i) => [10, 20, 30].map(y => i % 2 ? `<rect x="${x - 3.2}" y="${y - 3.2}" width="6.4" height="6.4" fill="#ff4757"/>` : `<circle cx="${x}" cy="${y}" r="3.4" fill="#151515"/>`).join('')).join('')}</svg>`,
+  closure: `<svg viewBox="0 0 60 40"><circle cx="30" cy="20" r="14" fill="none" stroke="#151515" stroke-width="3.2" stroke-dasharray="9 5"/><circle cx="30" cy="20" r="3" fill="#ff4757"/></svg>`,
+  continuity: `<svg viewBox="0 0 60 40"><g fill="#151515">${Array.from({ length: 11 }, (_, i) => `<circle cx="${5 + i * 5}" cy="${6 + i * 2.8}" r="2"/>`).join('')}</g><g fill="#ff4757">${Array.from({ length: 11 }, (_, i) => `<circle cx="${5 + i * 5}" cy="${34 - i * 2.8}" r="2"/>`).join('')}</g></svg>`,
+  'figure-ground': `<svg viewBox="0 0 60 40"><rect x="8" y="2" width="44" height="36" rx="3" fill="#151515"/><path d="M22 4c4 3 2 6 5 9-3 2-2 4 0 6-2 3 1 5-2 8 3 3 1 6-3 9h16c-4-3-6-6-3-9-3-3 0-5-2-8 2-2 3-4 0-6 3-3 1-6 5-9z" fill="#f4f2ed"/></svg>`
+};
+
+/* =========================================================
+   Learning Room: principle modules
+   ========================================================= */
+const PRIN = {};
+
+/* ---------- 1. PROXIMITY ---------- */
+PRIN.proximity = {
+  def: 'Elemen yang letaknya berdekatan cenderung dipersepsikan sebagai satu kelompok, terpisah dari elemen yang letaknya lebih jauh, walaupun semua elemen identik.',
+  note: '<b>Kunci:</b> jarak (ruang kosong/<i>white space</i>) adalah variabel pengelompokan. Di sini semua token sama bentuk dan warnanya, jadi hanya posisi yang menentukan kelompok yang kamu lihat.',
+  mission: 'Seret token sampai mata membaca <b>tepat 3 kelompok</b> (masing-masing minimal 2 token). Warna dan bentuk tidak berubah, hanya jarak.',
+  examples: ['Tata letak majalah: jarak antara judul dan paragrafnya lebih kecil daripada jarak ke artikel lain.', 'Formulir: label diletakkan dekat kolom isiannya, bukan di tengah dua kolom.', 'Menu navigasi: kategori dipisah dengan celah lebih lebar daripada jarak antar-item di dalamnya.', 'Kartu produk pada toko daring: foto, nama, dan harga dirapatkan agar terbaca sebagai satu unit.'],
+  hint: 'Seret token untuk mengubah jarak · bingkai warna = kelompok yang terbaca',
+  build(ctx) {
+    const { stage } = ctx;
+    stage.setBoard(PTINT.proximity); stage.setView(12, 7.6);
+    const geo = new THREE.CylinderGeometry(.34, .34, .3, 40); geo.rotateX(Math.PI / 2);
+    const bounds = { x: [-5.6, 5.6], y: [-3.4, 3.4] };
+    const tokens = []; let H = 1, V = 1, showHull = true;
+    const hulls = stage.add(new THREE.Group());
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+      const m = shadowy(new THREE.Mesh(geo, mat(PCOL.proximity)));
+      m.userData = { interactive: true, draggable: true, bounds, onDrag: update, r, c };
+      stage.add(m, true); tokens.push(m);
+    }
+    const layout = () => { tokens.forEach(t => { t.position.set((t.userData.c - 1.5) * H, (1 - t.userData.r) * V, 0); }); update(); };
+    function clusters() {
+      const n = tokens.length, par = [...Array(n).keys()];
+      const f = i => par[i] === i ? i : (par[i] = f(par[i]));
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++)
+        if (tokens[i].position.distanceTo(tokens[j].position) <= 1.25) par[f(i)] = f(j);
+      const g = {}; tokens.forEach((t, i) => (g[f(i)] ||= []).push(t));
+      return Object.values(g);
+    }
+    const HC = [C.blue, C.purple, C.green, C.yellow, C.ink, C.grey];
+    function update() {
+      for (const c of [...hulls.children]) { c.geometry.dispose(); c.material.dispose(); hulls.remove(c); }
+      const cl = clusters().sort((a, b) => Math.min(...a.map(t => t.position.x)) - Math.min(...b.map(t => t.position.x)));
+      cl.forEach((grp, i) => {
+        const xs = grp.map(t => t.position.x), ys = grp.map(t => t.position.y);
+        const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+        const w = x1 - x0 + 1.1, hh = y1 - y0 + 1.1, sh = rrShape(w, hh, .5);
+        const fill = new THREE.Mesh(new THREE.ShapeGeometry(sh, 12), new THREE.MeshBasicMaterial({ color: HC[i % HC.length], transparent: true, opacity: .14, depthWrite: false }));
+        const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(sh.getPoints(12)), new THREE.LineBasicMaterial({ color: HC[i % HC.length], transparent: true, opacity: .7 }));
+        [fill, line].forEach(o => { o.position.set((x0 + x1) / 2, (y0 + y1) / 2, -.2); hulls.add(o); });
+      });
+      hulls.visible = showHull;
+      const n = cl.length;
+      const span = g => { const xs = g.map(t => t.position.x), ys = g.map(t => t.position.y); return [Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)]; };
+      let read, why;
+      if (n === 1) { read = '1 kelompok utuh'; why = 'Semua jarak setara, jadi tidak ada celah yang memisahkan: token terbaca sebagai satu bidang.'; }
+      else if (cl.every(g => g.length > 1 && span(g)[1] > span(g)[0])) { read = `${n} kolom`; why = 'Jarak horizontal lebih besar daripada jarak vertikal, sehingga mata menyatukan token secara vertikal.'; }
+      else if (cl.every(g => g.length > 1 && span(g)[0] > span(g)[1])) { read = `${n} baris`; why = 'Jarak vertikal lebih besar daripada horizontal, sehingga token menyatu secara mendatar.'; }
+      else { read = `${n} kelompok`; why = `Ukuran kelompok: ${cl.map(g => g.length).join(' · ')}. Token yang terpencil terbaca sebagai elemen tersendiri.`; }
+      ctx.readout('Yang terbaca', read, why);
+      if (n === 3 && cl.every(g => g.length >= 2)) ctx.done();
+    }
+    const sh = slider({ label: 'Jarak horizontal antar-kolom', min: .9, max: 2.4, step: .05, value: H, fmt: v => num(v), onInput: v => { H = v; layout(); } });
+    const sv = slider({ label: 'Jarak vertikal antar-baris', min: .9, max: 2.4, step: .05, value: V, fmt: v => num(v), onInput: v => { V = v; layout(); } });
+    function scatter() {
+      const placed = [];
+      tokens.forEach(t => {
+        let p, k = 0;
+        do { p = new THREE.Vector3(rnd(-5, 5), rnd(-3, 3), 0); k++; } while (k < 80 && placed.some(q => q.distanceTo(p) < 1.4));
+        placed.push(p); stage.animate(420, e => t.position.lerp(p, e));
+      });
+      setTimeout(update, 450);
+    }
+    const reset = () => { H = 1; V = 1; sh.set(1); sv.set(1); layout(); };
+    ctx.controls.append(sh, sv,
+      toggle({ label: 'Tampilkan bingkai kelompok', value: true, onChange: v => { showHull = v; hulls.visible = v; } }),
+      buttons([{ label: 'Acak posisi', fn: scatter }, { label: 'Reset grid', fn: reset }]));
+    ctx.ar([{ label: 'Kolom', fn: () => { H = 1.8; V = 1; layout(); } }, { label: 'Baris', fn: () => { H = 1; V = 1.8; layout(); } }, { label: 'Acak', fn: scatter }, { label: 'Reset', fn: reset }]);
+    layout();
+  }
+};
+
+PRIN.proximity.short = 'Yang berdekatan terbaca sekelompok';
+/* ---------- 2. SIMILARITY ---------- */
+PRIN.similarity = {
+  def: 'Elemen yang memiliki kemiripan atribut visual (warna, bentuk, ukuran, tekstur, atau orientasi) cenderung dipersepsikan sebagai satu kelompok, walaupun jaraknya sama.',
+  note: '<b>Kunci:</b> jarak di grid ini dikunci seragam. Satu-satunya cara membuat kelompok adalah mengubah <i>atribut</i> objek. Bandingkan juga mana yang lebih kuat: perbedaan warna atau perbedaan bentuk?',
+  mission: 'Tanpa menggeser objek, ubah warna dan/atau bentuk agar grid berjarak sama ini terbaca sebagai <b>kolom-kolom</b> atau <b>baris-baris</b> yang bergantian.',
+  examples: ['Semua tautan dalam teks berwarna sama sehingga dikenali sebagai elemen yang bisa diklik.', 'Infografis: kategori data dibedakan dengan kode warna yang konsisten.', 'Set ikon antarmuka: gaya garis yang seragam menandai fungsi sejenis.', 'Tombol utama (primary) berwarna aksen, tombol sekunder bergaya garis (outline).'],
+  hint: 'Pilih kuas warna/bentuk, lalu klik atau seret di atas objek untuk “melukis”',
+  build(ctx) {
+    const { stage } = ctx;
+    stage.setBoard(PTINT.similarity); stage.setView(7.4, 6.6);
+    const N = 5, SP = 1.15;
+    const geos = { sphere: new THREE.SphereGeometry(.38, 32, 20), cube: new THREE.BoxGeometry(.62, .62, .62), cone: new THREE.ConeGeometry(.42, .78, 32) };
+    const COL = { abu: C.grey, merah: C.red, biru: C.blue, kuning: C.yellow, ungu: C.purple };
+    let brush = { kind: 'color', value: 'merah' };
+    const cells = [];
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      const m = shadowy(new THREE.Mesh(geos.sphere, mat(C.grey)));
+      m.position.set((c - 2) * SP, (2 - r) * SP, 0);
+      m.userData = { interactive: true, r, c, color: 'abu', shape: 'sphere', paint: paintCell };
+      stage.add(m, true); cells.push(m);
+    }
+    function setCell(m, color, shape) {
+      m.userData.color = color; m.userData.shape = shape;
+      m.material.color.set(COL[color]); m.geometry = geos[shape];
+    }
+    function paintCell(m) {
+      if (brush.kind === 'color') setCell(m, brush.value, m.userData.shape); else setCell(m, m.userData.color, brush.value);
+      stage.pulse(m); update();
+    }
+    const key = m => m.userData.color + '|' + m.userData.shape;
+    const at = (r, c) => cells[r * N + c];
+    function lines(byRow) {
+      const ks = [];
+      for (let i = 0; i < N; i++) {
+        const set = new Set(); for (let j = 0; j < N; j++) set.add(key(byRow ? at(i, j) : at(j, i)));
+        if (set.size !== 1) return false; ks.push([...set][0]);
+      }
+      for (let i = 1; i < N; i++) if (ks[i] === ks[i - 1]) return false;
+      return true;
+    }
+    function checker() {
+      const a = key(at(0, 0)), b = key(at(0, 1)); if (a === b) return false;
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (key(at(r, c)) !== ((r + c) % 2 ? b : a)) return false;
+      return true;
+    }
+    function update() {
+      const classes = new Set(cells.map(key)).size;
+      const cols = lines(false), rows = lines(true);
+      let read, why;
+      if (classes === 1) { read = '1 kelompok seragam'; why = 'Semua objek identik dan berjarak sama: tidak ada dasar untuk mengelompokkan.'; }
+      else if (cols) { read = `${N} kolom`; why = 'Objek di setiap kolom seragam dan berbeda dari kolom sebelahnya. Mata menyatukan yang mirip secara vertikal.'; }
+      else if (rows) { read = `${N} baris`; why = 'Objek di setiap baris seragam dan berbeda dari baris sebelahnya, sehingga terbaca mendatar.'; }
+      else if (checker()) { read = 'Pola papan catur / diagonal'; why = 'Kesamaan atribut membentuk jalur diagonal. Pola ini lebih lemah daripada kolom karena kelompoknya tidak bersebelahan.'; }
+      else { read = `${classes} jenis objek, pola campuran`; why = 'Kelompok kemiripan mulai muncul, tetapi belum membentuk struktur kolom atau baris yang konsisten.'; }
+      ctx.readout('Yang terbaca', read, why);
+      if ((cols || rows) && classes >= 2) ctx.done();
+    }
+    const swC = swatches({ label: 'Kuas warna', items: Object.entries(COL).map(([k, v]) => ({ key: k, color: v, name: k })), value: 'merah', onPick: k => { brush = { kind: 'color', value: k }; segS.set(null); upBrush(); } });
+    const SHN = { sphere: 'bola', cube: 'kubus', cone: 'kerucut' };
+    const segS = seg({ label: 'Kuas bentuk', items: [{ key: 'sphere', name: '● Bola' }, { key: 'cube', name: '■ Kubus' }, { key: 'cone', name: '▲ Kerucut' }], value: null, onPick: k => { brush = { kind: 'shape', value: k }; swC.set(null); upBrush(); } });
+    const bInfo = h('p', { class: 'hint', style: 'margin:0' });
+    const upBrush = () => bInfo.innerHTML = `Kuas aktif: <b>${brush.kind === 'color' ? 'warna ' + brush.value : 'bentuk ' + SHN[brush.value]}</b>. Klik atau seret di atas objek.`;
+    upBrush();
+    const resetAll = () => { cells.forEach(m => setCell(m, 'abu', 'sphere')); update(); };
+    const randomize = () => { cells.forEach(m => setCell(m, pick(['abu', 'merah']), pick(['sphere', 'cube']))); cells.forEach(m => stage.pulse(m, .15)); update(); };
+    const chk = () => { cells.forEach(m => { const o = (m.userData.r + m.userData.c) % 2; setCell(m, o ? 'biru' : 'abu', 'sphere'); }); update(); };
+    ctx.controls.append(swC, segS, bInfo, buttons([{ label: 'Reset', fn: resetAll }, { label: 'Acak', fn: randomize }, { label: 'Papan catur', fn: chk }]));
+    ctx.ar([{ label: 'Reset', fn: resetAll }, { label: 'Papan catur', fn: chk }, { label: 'Pola kolom', fn: () => { cells.forEach(m => setCell(m, m.userData.c % 2 ? 'merah' : 'abu', 'sphere')); update(); } }]);
+    update();
+  }
+};
+
+PRIN.similarity.short = 'Yang mirip terbaca sekelompok';
+/* ---------- 3. CLOSURE ---------- */
+PRIN.closure = {
+  def: 'Persepsi cenderung melengkapi bentuk yang tidak utuh. Celah pada kontur “diisi” oleh otak sehingga kita melihat bentuk yang utuh dan dikenal.',
+  note: '<b>Kunci:</b> pada <i>Segitiga Kanizsa</i> (Gaetano Kanizsa, 1955), tepi segitiga tidak pernah digambar. Kontur ilusi (<i>illusory contour</i>) hanya muncul ketika bukaan ketiga lingkaran sejajar.',
+  mission: 'Klik tiap lingkaran-terpotong untuk memutarnya 30°. Arahkan <b>ketiga bukaan ke pusat</b>, lalu amati segitiga yang muncul tanpa garis tepi.',
+  examples: ['Logo yang bentuknya tersusun dari potongan, tetapi tetap terbaca sebagai figur utuh.', 'Ikon garis (outline) minimalis yang konturnya sengaja terputus.', 'Huruf stensil: bagian huruf terpotong, tetapi tetap mudah dibaca.', 'Ilustrasi poster yang memotong objek di tepi bidang: penonton melengkapi sisanya di luar bingkai.'],
+  hint: 'Klik lingkaran untuk memutar · putar kamera untuk melihat bahwa segitiga tidak ada secara fisik',
+  build(ctx) {
+    const { stage } = ctx;
+    stage.setBoard(C.white); stage.setView(8, 7);
+    let mode = 'kanizsa';
+    const holder = h('div', { class: 'ctls' });
+    const segM = seg({ label: 'Demonstrasi', items: [{ key: 'kanizsa', name: 'Segitiga Kanizsa' }, { key: 'broken', name: 'Lingkaran terputus' }], value: mode, onPick: k => { mode = k; run(); } });
+    ctx.controls.append(segM, holder);
+    function run() { stage.clear(); holder.innerHTML = ''; mode === 'kanizsa' ? kanizsa() : broken(); }
+
+    function kanizsa() {
+      stage.setView(8, 7);
+      const R = 2.25, RAD = .95; let mouth = 60, helper = false;
+      const pac = [];
+      [90, 210, 330].forEach((a, i) => {
+        const facing = a + 180, off = [90, 150, 240][i];
+        const g = new THREE.Group();
+        const m = shadowy(new THREE.Mesh(extrude(pacShape(RAD, mouth), .22), mat(C.ink)));
+        const hitDisc = new THREE.Mesh(new THREE.CircleGeometry(RAD * 1.08, 32), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+        g.add(m, hitDisc); g.position.set(R * Math.cos(rad(a)), R * Math.sin(rad(a)), 0);
+        g.userData = { interactive: true, mesh: m, facing, ang: facing + off, onClick: rot };
+        g.rotation.z = rad(g.userData.ang);
+        stage.add(g, true); pac.push(g);
+      });
+      const triPts = [90, 210, 330].map(a => new THREE.Vector3(R * Math.cos(rad(a)), R * Math.sin(rad(a)), .2));
+      const tri = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(triPts), new THREE.LineDashedMaterial({ color: C.accent, dashSize: .18, gapSize: .14 }));
+      tri.computeLineDistances(); tri.visible = false; stage.add(tri);
+      function rot(g) {
+        const a0 = g.userData.ang, a1 = a0 + 30; g.userData.ang = a1;
+        stage.animate(260, k => g.rotation.z = rad(a0 + (a1 - a0) * k));
+        setTimeout(update, 270);
+      }
+      const aligned = g => { const d = ((g.userData.ang - g.userData.facing) % 360 + 360) % 360; return d < 1 || d > 359; };
+      function update() {
+        const n = pac.filter(aligned).length;
+        tri.visible = helper;
+        if (n === 3) {
+          ctx.readout('Bukaan sejajar: 3/3', 'Segitiga ilusi terbentuk', mouth === 60 ? 'Bukaan 60° sama dengan sudut segitiga sama sisi, jadi tepi ilusinya paling tegas. Segitiga putih itu bahkan tampak lebih terang dari latar.' : `Bukaan ${mouth}° tidak sama dengan sudut segitiga (60°), sehingga tepinya kurang menyambung dan ilusinya melemah.`);
+          ctx.done();
+        } else ctx.readout(`Bukaan sejajar: ${n}/3`, n === 2 ? 'Hampir terbentuk…' : 'Terbaca sebagai 3 lingkaran terpotong', 'Kontur ilusi butuh tepi-tepi yang saling menyambung (good continuation). Putar lingkaran yang bukaannya belum menghadap pusat.');
+      }
+      holder.append(
+        slider({ label: 'Lebar bukaan', min: 20, max: 110, step: 5, value: mouth, fmt: v => v + '°', onInput: v => { mouth = v; pac.forEach(g => { g.userData.mesh.geometry.dispose(); g.userData.mesh.geometry = extrude(pacShape(RAD, mouth), .22); }); update(); } }),
+        toggle({ label: 'Tampilkan garis bantu (tidak ada di gambar asli)', value: false, onChange: v => { helper = v; update(); } }),
+        buttons([{ label: 'Acak orientasi', fn: () => { pac.forEach(g => { g.userData.ang = g.userData.facing + rndi(1, 11) * 30; g.rotation.z = rad(g.userData.ang); }); update(); } }]));
+      ctx.ar([{ label: 'Acak orientasi', fn: () => { pac.forEach(g => { g.userData.ang = g.userData.facing + rndi(1, 11) * 30; g.rotation.z = rad(g.userData.ang); }); update(); } }, { label: 'Garis bantu', fn: () => { helper = !helper; update(); } }]);
+      update();
+    }
+
+    function broken() {
+      stage.setView(7.5, 7);
+      let n = 8, gap = .35; const pieces = [];
+      const bounds = { x: [-4.5, 4.5], y: [-3.2, 3.2] };
+      function build() {
+        pieces.forEach(p => { p.geometry.dispose(); p.material.dispose(); stage.content.remove(p); });
+        pieces.length = 0; stage.interactives.length = 0;
+        const step = Math.PI * 2 / n, len = step * (1 - gap);
+        for (let i = 0; i < n; i++) {
+          const mid = i * step + Math.PI / 2, a0 = mid - len / 2, a1 = mid + len / 2;
+          const m = shadowy(new THREE.Mesh(extrude(arcShape(1.95, 2.35, a0, a1), .22), mat(C.ink)));
+          m.userData = { interactive: true, draggable: true, bounds, onDrag: update };
+          stage.add(m, true); pieces.push(m);
+        }
+        update();
+      }
+      function update() {
+        const ok = pieces.filter(p => Math.hypot(p.position.x, p.position.y) < .25).length;
+        const miss = Math.round(gap * 100);
+        let read, why;
+        if (ok < pieces.length) { read = 'Fragmen terpisah'; why = `${pieces.length - ok} potongan bergeser dari lintasan lingkaran. Begitu potongan keluar jalur, otak berhenti melengkapinya.`; }
+        else if (gap <= .6) { read = 'Lingkaran utuh'; why = `${miss}% kontur hilang, tetapi lintasan potongan masih konsisten, jadi otak mengisi celahnya.`; }
+        else { read = 'Mulai pecah'; why = `${miss}% kontur hilang. Potongan terlalu pendek sehingga lingkaran mulai terbaca sebagai deretan titik atau busur.`; }
+        ctx.readout(`Potongan di jalur: ${ok}/${pieces.length}`, read, why);
+      }
+      holder.append(
+        slider({ label: 'Jumlah potongan', min: 3, max: 16, step: 1, value: n, onInput: v => { n = v; build(); } }),
+        slider({ label: 'Besar celah (kontur yang hilang)', min: 0, max: .9, step: .05, value: gap, fmt: v => Math.round(v * 100) + '%', onInput: v => { gap = v; build(); } }),
+        h('p', { class: 'hint', style: 'margin:0' }, 'Seret potongan keluar dari lingkaran, lalu kembalikan. Kapan bentuk utuh “hilang”?'),
+        buttons([{ label: 'Rapikan', fn: () => { pieces.forEach(p => { const s = p.position.clone(); stage.animate(350, k => p.position.lerpVectors(s, new THREE.Vector3(), k)); }); setTimeout(update, 380); } },
+          { label: 'Hamburkan', fn: () => { pieces.forEach(p => { const t = new THREE.Vector3(rnd(-1.4, 1.4), rnd(-1.2, 1.2), 0), s = p.position.clone(); stage.animate(350, k => p.position.lerpVectors(s, t, k)); }); setTimeout(update, 380); } }]));
+      ctx.ar([{ label: 'Celah +', fn: () => { gap = Math.min(.9, gap + .15); build(); } }, { label: 'Celah −', fn: () => { gap = Math.max(0, gap - .15); build(); } }]);
+      build();
+    }
+    run();
+  }
+};
+
+PRIN.closure.short = 'Otak melengkapi bentuk yang terputus';
+/* ---------- 4. CONTINUITY ---------- */
+PRIN.continuity = {
+  def: 'Mata cenderung mengikuti garis atau kurva yang berkesinambungan (good continuation). Elemen yang tersusun pada alur yang mulus dipersepsikan sebagai satu kesatuan, bahkan ketika alur itu bersilangan dengan alur lain.',
+  note: '<b>Kunci:</b> semakin kecil belokan (perubahan arah) antar-ruas, semakin kuat mata “meluncur” mengikuti garis. Di persilangan, mata memilih jalur yang paling lurus, bukan berbelok tajam.',
+  mission: 'Seret titik kendali ungu agar garis ungu <b>memotong garis biru</b> dengan <b>alur mulus</b> (belokan maksimum ≤ 30°).',
+  examples: ['Timeline atau diagram alur: garis penghubung memandu urutan baca.', 'Komposisi foto yang mengikuti diagonal atau kurva-S untuk mengarahkan pandangan.', 'Tipografi yang mengikuti jalur lengkung pada kemasan atau poster.', 'Peta rute transportasi: garis yang menyambung mulus mudah diikuti meski bersilangan.'],
+  hint: 'Seret titik kendali (cincin ungu) · nilai belokan tiap titik dihitung langsung',
+  build(ctx) {
+    const { stage } = ctx;
+    stage.setBoard(PTINT.continuity); stage.setView(12, 7.6);
+    const bead = new THREE.SphereGeometry(.15, 18, 12);
+    const A = []; for (let x = -5.4; x <= 5.41; x += .4) A.push(new THREE.Vector3(x, 1.15 * Math.sin(x * .85), 0));
+    const aMat = mat(C.blue), bMat = mat(C.purple);
+    const aMesh = shadowy(new THREE.InstancedMesh(bead, aMat, A.length));
+    const M4 = new THREE.Matrix4();
+    A.forEach((p, i) => aMesh.setMatrixAt(i, M4.makeTranslation(p.x, p.y, p.z)));
+    stage.add(aMesh);
+    const bMesh = shadowy(new THREE.InstancedMesh(bead, bMat, 200)); stage.add(bMesh);
+    const init = [[-4.6, 1.9], [-2.3, 3.2], [0, 1.9], [2.3, 3.2], [4.6, 1.9]];
+    const bounds = { x: [-5.6, 5.6], y: [-3.5, 3.5] };
+    const handles = init.map(([x, y]) => {
+      const g = new THREE.Group();
+      const ringMat = mat(C.purple, { emissive: 0x000000 });
+      const ring = shadowy(new THREE.Mesh(new THREE.TorusGeometry(.27, .07, 14, 40), ringMat));
+      const halo = new THREE.Mesh(new THREE.SphereGeometry(.42, 16, 12), new THREE.MeshBasicMaterial({ color: C.purple, transparent: true, opacity: .1, depthWrite: false }));
+      g.add(ring, halo); g.position.set(x, y, .25);
+      g.userData = { interactive: true, draggable: true, bounds, onDrag: update, ringMat };
+      return stage.add(g, true);
+    });
+    const frame = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: C.purple, dashSize: .12, gapSize: .1, transparent: true, opacity: .6 }));
+    stage.add(frame); let showFrame = true;
+    const segX = (p1, p2, p3, p4) => {
+      const d = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+      const d1 = d(p3, p4, p1), d2 = d(p3, p4, p2), d3 = d(p1, p2, p3), d4 = d(p1, p2, p4);
+      return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0));
+    };
+    function update() {
+      const P = handles.map(g => new THREE.Vector3(g.position.x, g.position.y, 0));
+      // beads along the polyline
+      let total = 0; const segs = [];
+      for (let i = 1; i < P.length; i++) { const l = P[i].distanceTo(P[i - 1]); segs.push(l); total += l; }
+      const count = Math.min(200, Math.max(2, Math.floor(total / .4) + 1));
+      for (let k = 0; k < count; k++) {
+        let d = total * k / (count - 1), i = 0;
+        while (i < segs.length - 1 && d > segs[i]) { d -= segs[i]; i++; }
+        const p = P[i].clone().lerp(P[i + 1], segs[i] ? Math.min(1, d / segs[i]) : 0);
+        bMesh.setMatrixAt(k, M4.makeTranslation(p.x, p.y, 0));
+      }
+      bMesh.count = count; bMesh.instanceMatrix.needsUpdate = true; bMesh.computeBoundingSphere();
+      frame.geometry.dispose(); frame.geometry = new THREE.BufferGeometry().setFromPoints(P.map(p => p.clone().setZ(.25))); frame.computeLineDistances(); frame.visible = showFrame;
+      // turning angles
+      let maxT = 0, at = -1;
+      handles.forEach(g => g.userData.ringMat.color.set(C.purple));
+      for (let i = 1; i < P.length - 1; i++) {
+        const v1 = P[i].clone().sub(P[i - 1]), v2 = P[i + 1].clone().sub(P[i]);
+        if (v1.length() < .05 || v2.length() < .05) continue;
+        const t = deg(v1.angleTo(v2)); if (t > maxT) { maxT = t; at = i; }
+      }
+      if (at > 0 && maxT > 30) handles[at].userData.ringMat.color.set(C.ink);
+      let cross = false;
+      for (let i = 1; i < P.length && !cross; i++) for (let j = 1; j < A.length; j++) if (segX(P[i - 1], P[i], A[j - 1], A[j])) { cross = true; break; }
+      const score = Math.round(clamp(100 * (1 - maxT / 90), 0, 100));
+      let read, why;
+      if (maxT <= 30 && cross) { read = 'Dua garis bersilangan'; why = 'Di titik silang, mata tetap mengikuti jalur yang paling mulus. Kamu melihat dua garis utuh, bukan potongan yang berbelok.'; }
+      else if (maxT <= 30) { read = 'Satu alur mulus'; why = 'Alurnya sudah mulus, tetapi belum memotong garis biru. Tarik melintasinya.'; }
+      else { read = 'Alur patah-patah'; why = `Belokan tajam ${Math.round(maxT)}° di titik ${at + 1} (cincin gelap) memutus aliran pandangan. Kurangi sudutnya.`; }
+      ctx.readout(`Kesinambungan: ${score}% · belokan maks. ${Math.round(maxT)}° · ${cross ? 'memotong' : 'belum memotong'}`, read, why);
+      if (maxT <= 30 && cross) ctx.done();
+    }
+    const reset = () => { handles.forEach((g, i) => { const s = g.position.clone(), t = new THREE.Vector3(init[i][0], init[i][1], .25); stage.animate(350, k => { g.position.lerpVectors(s, t, k); update(); }); }); };
+    const smooth = () => { const T = [[-4.8, 3], [-2.4, 1.6], [0, .1], [2.4, -1.4], [4.8, -2.8]]; handles.forEach((g, i) => { const s = g.position.clone(), t = new THREE.Vector3(T[i][0], T[i][1], .25); stage.animate(400, k => { g.position.lerpVectors(s, t, k); update(); }); }); };
+    ctx.controls.append(
+      toggle({ label: 'Samakan warna kedua garis', value: false, onChange: v => { bMat.color.set(v ? C.blue : C.purple); } }),
+      h('p', { class: 'hint', style: 'margin:-6px 0 0' }, 'Coba aktifkan setelah misi selesai: apakah kamu masih bisa membedakan dua garis tanpa bantuan warna? Jika ya, itulah continuity yang bekerja, bukan similarity.'),
+      toggle({ label: 'Tampilkan kerangka titik kendali', value: true, onChange: v => { showFrame = v; frame.visible = v; } }),
+      buttons([{ label: 'Reset', fn: reset }]));
+    ctx.ar([{ label: 'Contoh mulus', fn: smooth }, { label: 'Reset', fn: reset }, { label: 'Samakan warna', fn: () => bMat.color.set(bMat.color.getHexString() === C.blue.slice(1) ? C.purple : C.blue) }]);
+    update();
+  }
+};
+
+PRIN.continuity.short = 'Mata mengikuti alur yang mulus';
+/* ---------- 5. FIGURE-GROUND ---------- */
+PRIN['figure-ground'] = {
+  def: 'Persepsi memisahkan bidang visual menjadi figur (objek yang menjadi fokus) dan latar (ground) di sekitarnya. Kontras, kedalaman, ukuran, dan keterlingkupan menentukan bidang mana yang terbaca sebagai figur.',
+  note: '<b>Kunci:</b> <i>Vas Rubin</i> (Edgar Rubin, 1915) bersifat <i>bistabil</i>. Saat datar dan berkontras cukup, kamu bisa melihat vas atau dua profil wajah, bergantian, tapi tidak keduanya sekaligus. Kedalaman 3D memaksa salah satunya menjadi figur.',
+  mission: 'Atur warna, kedalaman, dan urutan agar figur berganti.',
+  steps: ['Vas menjadi figur: vas di depan (kedalaman > 0) dan kontras ≥ 4,5:1', 'Lalu tukar: dua profil wajah menjadi figur dengan kontras ≥ 4,5:1'],
+  examples: ['Logo yang memanfaatkan ruang negatif sehingga muncul bentuk kedua di antara huruf atau bidang.', 'Kontras teks terhadap latar pada poster: rasio kontras yang rendah membuat figur tenggelam.', 'Siluet: bentuk gelap di atas latar terang langsung terbaca sebagai figur.', 'Kartu atau modal antarmuka diberi bayangan agar “maju” dari latar halaman.'],
+  hint: 'Putar kamera ke samping untuk melihat lapisan mana yang maju',
+  build(ctx) {
+    const { stage } = ctx;
+    stage.setBoard(PTINT['figure-ground']); stage.setView(6.2, 6.2);
+    const polys = vasePolys();
+    const vMat = mat(C.grey), fMat = mat(C.lgrey);
+    const vase = shadowy(new THREE.Mesh(extrude(polyShape(polys.vase), .2, false), vMat));
+    const faces = new THREE.Group();
+    faces.add(shadowy(new THREE.Mesh(extrude(polyShape(polys.left), .2, false), fMat)), shadowy(new THREE.Mesh(extrude(polyShape(polys.right), .2, false), fMat)));
+    stage.add(vase); stage.add(faces);
+    const st = { v: C.grey, f: C.lgrey, depth: 0, front: 'vase', s1: false, s2: false };
+    const PAL = [{ key: C.ink, color: C.ink, name: 'Hitam' }, { key: C.white, color: C.white, name: 'Putih' }, { key: C.grey, color: C.grey, name: 'Abu tua' }, { key: C.lgrey, color: C.lgrey, name: 'Abu muda' }, { key: C.red, color: C.red, name: 'Merah' }, { key: C.yellow, color: C.yellow, name: 'Kuning' }, { key: C.blue, color: C.blue, name: 'Biru' }];
+    let lastFront = 'vase';
+    function apply() {
+      vMat.color.set(st.v); fMat.color.set(st.f);
+      const tv = st.front === 'vase' ? st.depth : 0, tf = st.front === 'faces' ? st.depth : 0;
+      const sv = vase.position.z, sf = faces.position.z;
+      stage.animate(300, k => { vase.position.z = sv + (tv - sv) * k; faces.position.z = sf + (tf - sf) * k; });
+      update();
+    }
+    function update() {
+      const cr = contrast(st.v, st.f);
+      const crTxt = num(cr, 1).replace(',0', '') + ':1';
+      let read, why;
+      if (cr < 1.8) { read = 'Ambigu: figur tenggelam'; why = `Kontras ${crTxt} terlalu rendah. Batas antara vas dan wajah hampir hilang, sehingga tidak ada figur yang jelas.`; }
+      else if (st.depth < .15) { read = 'Bistabil: vas ⇄ dua wajah'; why = `Kontras ${crTxt} cukup, tetapi keduanya sebidang. Persepsimu akan berganti-ganti antara vas dan dua profil wajah.`; }
+      else if (st.front === 'vase') { read = 'Figur: vas'; why = `Vas maju ${num(st.depth)} unit dan kontrasnya ${crTxt}. Area wajah turun menjadi latar.`; }
+      else { read = 'Figur: dua profil wajah'; why = `Kedua wajah maju ${num(st.depth)} unit dengan kontras ${crTxt}. Vas sekarang dibaca sebagai ruang kosong di antara mereka.`; }
+      ctx.readout(`Rasio kontras ${crTxt} · ${cr >= 4.5 ? 'memadai' : 'kurang dari 4,5:1'}`, read, why);
+      if (cr >= 4.5 && st.depth >= .15 && st.front === 'vase') st.s1 = true;
+      if (st.s1 && cr >= 4.5 && st.depth >= .15 && st.front === 'faces') st.s2 = true;
+      ctx.steps([st.s1, st.s2]);
+      if (st.s1 && st.s2) ctx.done();
+    }
+    const swapBtn = h('button', { class: 'btn sm', onclick: () => { st.front = st.front === 'vase' ? 'faces' : 'vase'; if (st.depth < .15) { st.depth = .6; dS.set(.6); } apply(); toast(st.front === 'vase' ? 'Vas di depan' : 'Profil wajah di depan'); } }, '⇄ Tukar figur dan latar');
+    const dS = slider({ label: 'Kedalaman (jarak bidang depan)', min: 0, max: 1.2, step: .05, value: 0, fmt: v => num(v), onInput: v => { st.depth = v; apply(); } });
+    ctx.controls.append(
+      swatches({ label: 'Warna vas', items: PAL, value: st.v, onPick: k => { st.v = k; apply(); } }),
+      swatches({ label: 'Warna profil wajah', items: PAL, value: st.f, onPick: k => { st.f = k; apply(); } }),
+      dS, h('div', { class: 'row' }, swapBtn));
+    ctx.ar([{ label: '⇄ Tukar', fn: () => { st.front = st.front === 'vase' ? 'faces' : 'vase'; st.depth = Math.max(st.depth, .6); apply(); } }, { label: 'Kontras tinggi', fn: () => { st.v = C.ink; st.f = C.white; apply(); } }, { label: 'Datar', fn: () => { st.depth = 0; apply(); } }]);
+    apply();
+  }
+};
+
+PRIN['figure-ground'].short = 'Memisahkan figur dari latarnya';
+/* =========================================================
+   Shared mission helpers
+   ========================================================= */
+function missionBox(key) {
+  const P = PRIN[key], done = S.missions.has(key);
+  const el = h('div', { class: 'mission' + (done ? ' done' : ''), 'data-k': key },
+    h('span', { class: 'mtag' }, done ? '✓ Misi selesai' : '🎯 Misi'), h('p', { html: P.mission }));
+  let sub = null;
+  if (P.steps) { sub = h('div', { class: 'sub' }, P.steps.map(s => h('span', {}, h('i'), s))); el.append(sub); }
+  return { el, sub };
+}
+function makeCtx(key, stage, ui) {
+  return {
+    stage, controls: ui.ctlEl,
+    readout(title, big, small) { ui.liveEl.innerHTML = ''; ui.liveEl.append(h('span', { class: 'mono' }, title), h('b', {}, big), small ? h('p', {}, small) : ''); },
+    steps(arr) { if (!ui.sub) return; [...ui.sub.children].forEach((s, i) => s.querySelector('i').classList.toggle('ok', !!arr[i])); },
+    done() { completeMission(key); },
+    ar(list) { ui.onAR && ui.onAR(list); }
+  };
+}
+function completeMission(key) {
+  if (S.missions.has(key)) return;
+  S.missions.add(key);
+  $$(`.mission[data-k="${key}"]`).forEach(m => { m.classList.add('done'); m.querySelector('.mtag').textContent = '✓ Misi selesai'; });
+  toast(`🎉 Misi ${NAMES[key]} selesai! (${S.missions.size}/5)`, 'ok');
+  renderStrip(); renderSteps();
+}
+
+/* =========================================================
+   Learning slides
+   ========================================================= */
+const SLIDES = [{ type: 'intro' }, ...KEYS.flatMap(k => [{ type: 'kenali', k }, { type: 'coba', k }]), { type: 'summary' }];
+let roomStage, slideIdx = 0, built = null, arSupported = null, arActions = [];
+const EMO = ['🗞️', '📝', '🧭', '🛍️'];
+
+function buildIntroScene(stage) {
+  stage.setBoard(PTINT.intro); stage.setView(9, 7);
+  const cols = [PCOL.proximity, PCOL.similarity, PCOL.closure, PCOL.continuity, PCOL['figure-ground']];
+  const N = 24, balls = [];
+  for (let i = 0; i < N; i++) {
+    const m = shadowy(new THREE.Mesh(new THREE.SphereGeometry(.26, 24, 16), mat(cols[i % 5])));
+    const a = i / N * Math.PI * 2;
+    m.userData = { ring: new THREE.Vector3(2.4 * Math.cos(a), 2.4 * Math.sin(a), 0), rand: new THREE.Vector3(rnd(-4, 4), rnd(-3, 3), rnd(-.5, 1.5)) };
+    m.position.copy(m.userData.rand); stage.add(m); balls.push(m);
+  }
+  const t0 = performance.now();
+  let last = -1;
+  stage.tickers.add(() => {
+    const t = (performance.now() - t0) / 1000, phase = Math.floor(t / 3) % 2;
+    balls.forEach(b => b.position.lerp(phase ? b.userData.ring : b.userData.rand, .06));
+    if (phase !== last) {
+      last = phase;
+      $('#live').innerHTML = '';
+      $('#live').append(h('span', { class: 'mono' }, 'Bagian ↔ keseluruhan'), h('b', {}, phase ? 'Sebuah lingkaran!' : '24 bola acak'),
+        h('p', {}, phase ? 'Bolanya tetap sama, tetapi susunannya membuat otak melihat satu bentuk utuh.' : 'Tanpa susunan, otak hanya melihat bagian-bagian yang terpisah.'));
+    }
+    return true;
+  });
+}
+
+function buildScene(key) {
+  if (built && built.key === key) return built;
+  roomStage.clear(); arActions = [];
+  $('#live').innerHTML = '';
+  if (key === 'intro') { buildIntroScene(roomStage); built = { key }; return built; }
+  const mb = missionBox(key), ctlEl = h('div', { class: 'ctls' });
+  const ui = { liveEl: $('#live'), ctlEl, sub: mb.sub, onAR: l => { arActions = l; } };
+  built = { key, missionEl: mb.el, ctlEl };
+  PRIN[key].build(makeCtx(key, roomStage, ui));
+  return built;
+}
+
+function ensureRoom() {
+  if (roomStage) return;
+  roomStage = new Stage($('#roomStage'));
+  $('#camReset').onclick = () => roomStage.setView(roomStage.viewW, roomStage.viewH);
+  $('#viewFlat').onclick = () => roomStage.setView(roomStage.viewW, roomStage.viewH, 0);
+  $('#viewTilt').onclick = () => { roomStage.controls.target.set(0, 0, 0); roomStage.camera.position.set(4.5, -4, 8).normalize(); roomStage.fit(); };
+  $('#prevSlide').onclick = () => openSlide(slideIdx - 1);
+  $('#nextSlide').onclick = () => openSlide(slideIdx + 1);
+  document.addEventListener('keydown', e => {
+    if (S.view !== 'room' || /input|textarea/i.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight') openSlide(slideIdx + 1);
+    if (e.key === 'ArrowLeft') openSlide(slideIdx - 1);
+  });
+  setupAR();
+  openSlide(slideIdx);
+}
+
+function renderStrip() {
+  const box = $('#thumbs'); if (!box) return;
+  box.innerHTML = '';
+  SLIDES.forEach((sl, i) => {
+    const k = sl.k, c = k ? PCOL[k] : '#fff', fg = k ? PFG[k] : 'var(--ink)';
+    const label = sl.type === 'intro' ? 'Mulai' : sl.type === 'summary' ? 'Rangkuman' : NAMES[k];
+    const sub = sl.type === 'kenali' ? `${KEYS.indexOf(k) + 1} · Kenali` : sl.type === 'coba' ? `${KEYS.indexOf(k) + 1} · Coba` : sl.type === 'intro' ? 'Gestalt' : 'Selesai';
+    const done = (sl.type === 'kenali' && S.visited.has(k)) || (sl.type === 'coba' && S.missions.has(k));
+    const b = h('button', { class: 'thumb', style: `--c:${c};--fg:${fg}`, 'aria-current': String(i === slideIdx), title: label + ' — ' + sub, onclick: () => openSlide(i) },
+      label, h('small', {}, sub), done ? h('span', { class: 'ck' }, '✓') : '');
+    box.append(b);
+  });
+  const cur = box.children[slideIdx]; if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+  $('#counter').textContent = `${slideIdx + 1} / ${SLIDES.length}`;
+  $('#prevSlide').disabled = slideIdx === 0;
+  $('#nextSlide').disabled = slideIdx === SLIDES.length - 1;
+}
+
+function openPrinciple(k, type = 'kenali') { openSlide(SLIDES.findIndex(s => s.k === k && s.type === type)); }
+
+function openSlide(i) {
+  i = clamp(i, 0, SLIDES.length - 1); slideIdx = i;
+  const sl = SLIDES[i], key = sl.k || 'intro';
+  if (sl.k) { S.current = sl.k; if (sl.type === 'kenali' || sl.type === 'coba') S.visited.add(sl.k); }
+  buildScene(key);
+  const sc = $('#stageCard'); sc.style.setProperty('--tint', PTINT[key]);
+  const card = $('#slideCard'); card.innerHTML = ''; card.scrollTop = 0;
+  const next = (lbl, cls = '') => h('button', { class: 'btn ' + cls, onclick: () => openSlide(i + 1) }, lbl);
+  const prev = () => i > 0 ? h('button', { class: 'btn ghost sm', onclick: () => openSlide(i - 1) }, '← Sebelumnya') : h('span');
+
+  if (sl.type === 'intro') {
+    $('#roomHint').textContent = 'Amati bola-bola: kapan kamu mulai melihat “bentuk”?';
+    card.append(
+      h('span', { class: 'stag' }, '👋 Mulai di sini'),
+      h('h2', {}, 'Apa itu Gestalt?'),
+      h('p', { class: 'def', html: '<i>Gestalt</i> (bahasa Jerman) berarti <b>bentuk atau konfigurasi utuh</b>. Psikologi Gestalt dikembangkan di Jerman awal abad ke-20 oleh Max Wertheimer, Wolfgang Köhler, dan Kurt Koffka.' }),
+      h('div', { class: 'keybox', style: `--tintc:${PTINT.intro}`, html: '<b>💡 Ide utamanya</b>Otak tidak sekadar menjumlahkan titik, garis, dan warna. Ia aktif <b>mengelompokkan</b>, <b>melengkapi</b>, dan <b>memisahkan</b> elemen menjadi pola yang bermakna. Desainer memakai kecenderungan ini untuk mengarahkan cara orang membaca karya.' }),
+      h('div', { class: 'sec' }, h('span', { class: 'mono' }, 'Lima prinsip yang akan kamu jelajahi'),
+        h('div', { class: 'ptiles' }, KEYS.map(k => h('button', { class: 'ptile', style: `background:${PTINT[k]}`, onclick: () => openPrinciple(k) }, h('span', { html: ICON[k] }), h('span', {}, NAMES[k], h('small', {}, IDN[k])))))),
+      h('div', { class: 'keybox', html: '<b>🕹️ Cara memakai slide</b>Seret latar untuk memutar ruang 3D, scroll atau cubit untuk zoom, lalu sentuh atau seret objek untuk memanipulasinya. Pindah slide dengan tombol ← → atau strip di bawah.' }),
+      h('div', { class: 'snav' }, h('span'), next('Mulai: Proximity →', 'yellow')));
+  } else if (sl.type === 'summary') {
+    $('#roomHint').textContent = 'Kamu sudah menjelajahi lima prinsip Gestalt';
+    card.append(
+      h('span', { class: 'stag', style: '--c:var(--green)' }, '🏁 Rangkuman'),
+      h('h2', {}, S.missions.size === 5 ? 'Semua misi selesai! 🎉' : 'Hampir selesai!'),
+      h('p', { class: 'def' }, `Kamu sudah membuka ${S.visited.size}/5 prinsip dan menyelesaikan ${S.missions.size}/5 misi manipulasi.`),
+      h('div', { class: 'sec' }, h('div', { class: 'ptiles', style: 'grid-template-columns:1fr' }, KEYS.map(k => h('button', { class: 'ptile', style: `background:${PTINT[k]}`, onclick: () => openPrinciple(k, S.missions.has(k) ? 'kenali' : 'coba') },
+        h('span', { html: ICON[k] }), h('span', { style: 'flex:1' }, NAMES[k], h('small', {}, PRIN[k].short)), h('span', {}, S.missions.has(k) ? '✅' : '⬜')))))
+      ,
+      h('div', { class: 'keybox', html: '<b>📱 Mau mencoba di dunia nyata?</b>Gunakan <b>AR Scan</b> dan arahkan kamera HP ke kartu Gestalt. Misi juga bisa diselesaikan lewat AR.' }),
+      h('div', { class: 'row', style: 'margin-top:18px' }, h('button', { class: 'btn green', onclick: () => go('chal') }, '✦ Lanjut ke AI Challenge'), h('button', { class: 'btn purple', onclick: () => go('ar') }, '📱 AR Scan')));
+  } else {
+    const k = sl.k, P = PRIN[k], n = KEYS.indexOf(k) + 1;
+    const tag = h('span', { class: 'stag', style: `--c:${PCOL[k]};--fg:${PFG[k]}` }, `Prinsip ${n} · ${sl.type === 'kenali' ? '👀 Kenali' : '🕹️ Coba'}`);
+    if (sl.type === 'kenali') {
+      $('#roomHint').textContent = 'Putar dan amati. Kamu juga sudah boleh menyentuh objeknya';
+      card.append(tag, h('h2', {}, NAMES[k]), h('span', { class: 'idn' }, IDN[k]),
+        h('p', { class: 'def' }, P.def),
+        h('div', { class: 'keybox', style: `--tintc:${PTINT[k]}`, html: '<b>💡 Kunci</b>' + P.note.replace(/^<b>Kunci:<\/b>\s*/, '') }),
+        h('div', { class: 'sec' }, h('span', { class: 'mono' }, '🎨 Penerapan dalam desain'), h('ul', { class: 'exlist' }, P.examples.map((e, j) => h('li', {}, h('span', {}, EMO[j % 4]), e)))),
+        h('div', { class: 'snav' }, prev(), next('Coba sendiri →', 'yellow')));
+    } else {
+      $('#roomHint').textContent = P.hint;
+      card.append(tag, h('h2', {}, NAMES[k]), h('span', { class: 'idn' }, IDN[k]),
+        built.missionEl,
+        h('div', { class: 'sec' }, h('span', { class: 'mono' }, 'Kontrol manipulasi'), built.ctlEl),
+        h('div', { class: 'keybox', html: `<b>📱 Punya kartu AR?</b>Scan <b>kartu nomor ${n}</b> di menu AR Scan untuk mencoba misi ini di atas meja.` }),
+        h('div', { class: 'snav' }, prev(), next(i + 1 < SLIDES.length - 1 ? `${NAMES[KEYS[n]]} →` : 'Rangkuman →')));
+    }
+  }
+  renderStrip(); renderSteps();
+  try { localStorage.setItem('gx-slide', String(i)); } catch (e) {}
+}
+
+/* ---------- AR ruang (WebXR, optional) ---------- */
+async function setupAR() {
+  const btn = $('#arBtn');
+  try { arSupported = !!(navigator.xr && await navigator.xr.isSessionSupported('immersive-ar')); } catch (e) { arSupported = false; }
+  btn.dataset.supported = String(arSupported);
+  btn.onclick = async () => {
+    if (!arSupported) { toast('AR ruang (WebXR) tidak didukung di sini. Pakai menu 📱 AR Scan dengan kartu: berjalan di Android & iPhone.'); return; }
+    if (!built || built.key === 'intro') { toast('Buka slide salah satu prinsip dulu.'); return; }
+    const ov = $('#arOverlay'), acts = $('#arActions');
+    $('#arTitle').textContent = 'AR · ' + NAMES[built.key];
+    acts.innerHTML = '';
+    arActions.forEach(a => acts.append(h('button', { onclick: a.fn }, a.label)));
+    let session;
+    acts.append(h('button', { class: 'x', onclick: () => session && session.end() }, 'Keluar AR'));
+    ov.addEventListener('beforexrselect', e => e.preventDefault());
+    ov.classList.add('on');
+    try { session = await roomStage.startAR(ov, () => ov.classList.remove('on')); }
+    catch (e) { ov.classList.remove('on'); toast('Gagal memulai AR: ' + (e.message || e)); }
+  };
+}
+
+/* =========================================================
+   AR Scan — image tracking on printed cards (MindAR)
+   ========================================================= */
+const MINDAR_URL = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js';
+const TARGETS_URL = 'targets.mind';
+let scan = null, scanActive = -1;
+
+function buildGallery() {
+  const g = $('#cardGallery'); if (g.dataset.built) return; g.dataset.built = '1';
+  KEYS.forEach((k, i) => g.append(h('figure', {}, h('a', { href: `cards/card${i + 1}.jpg`, target: '_blank', rel: 'noopener' }, h('img', { src: `cards/card${i + 1}.jpg`, alt: `Kartu AR ${i + 1}: ${NAMES[k]}`, loading: 'lazy' })), h('figcaption', { style: `background:${PCOL[k]};color:${PFG[k]}` }, `${i + 1} · ${NAMES[k]}`))));
+}
+function arError(msg) { const e = $('#arErr'); e.hidden = false; e.innerHTML = msg; }
+
+async function startScan() {
+  if (scan) return;
+  const box = $('#arCam'), go = $('#arGo');
+  $('#arErr').hidden = true; go.disabled = true; go.textContent = 'Menyiapkan kamera…';
+  let stream;
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('nomedia'), { name: 'NoMedia' });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    stream.getTracks().forEach(t => t.stop());
+  } catch (e) {
+    go.disabled = false; go.textContent = 'Nyalakan kamera';
+    const inFrame = window.self !== window.top;
+    if (e.name === 'NotAllowedError' || e.name === 'SecurityError') arError(inFrame
+      ? '<b>Kamera diblokir di halaman ini.</b> Halaman sedang dibuka di dalam bingkai (misalnya pratinjau Claude) yang tidak mengizinkan kamera. Buka <b>link publik (GitHub Pages)</b> langsung di browser HP.'
+      : '<b>Izin kamera ditolak.</b> Izinkan akses kamera di pengaturan situs browser, lalu tekan tombol lagi.');
+    else if (e.name === 'NotFoundError' || e.name === 'OverconstrainedError') arError('<b>Kamera tidak ditemukan.</b> Gunakan HP atau laptop yang memiliki kamera.');
+    else if (e.name === 'NoMedia') arError('<b>Browser ini tidak mendukung akses kamera</b>, atau halaman tidak dibuka lewat HTTPS. Buka link GitHub Pages di Chrome (Android) atau Safari (iPhone).');
+    else arError('<b>Kamera tidak bisa dipakai:</b> ' + (e.message || e.name));
+    return;
+  }
+  try {
+    go.textContent = 'Memuat modul AR…';
+    const { MindARThree } = await import(MINDAR_URL);
+    const mind = new MindARThree({ container: box, imageTargetSrc: TARGETS_URL, maxTrack: 1, uiLoading: 'no', uiScanning: 'no', uiError: 'no' });
+    const { renderer, scene, camera } = mind;
+    if (mind.cssRenderer) mind.cssRenderer.domElement.style.pointerEvents = 'none';
+    renderer.domElement.style.zIndex = '1';
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d0e8, 1.4));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.3); dl.position.set(.5, 1, 2); scene.add(dl);
+    const panel = $('#arPanel'); panel.innerHTML = '';
+    const stages = KEYS.map((k, i) => {
+      const anchor = mind.addAnchor(i);
+      const st = new Stage(box, { renderer, scene, camera, parent: anchor.group });
+      st.active = false;
+      st.board.material.transparent = true; st.board.material.opacity = .9;
+      const mb = missionBox(k), ctlEl = h('div', { class: 'ctls' }), liveEl = h('div', { class: 'live' });
+      const wrap = h('div', { hidden: true }, mb.el, liveEl, h('div', { class: 'sec' }, h('span', { class: 'mono' }, 'Kontrol'), ctlEl));
+      panel.append(wrap);
+      PRIN[k].build(makeCtx(k, st, { liveEl, ctlEl, sub: mb.sub }));
+      anchor.onTargetFound = () => arFound(i);
+      anchor.onTargetLost = () => arLost(i);
+      return { st, wrap, k };
+    });
+    scan = { mind, stages };
+    renderer.setAnimationLoop(() => { stages.forEach(s => s.st.active && s.st.tick()); renderer.render(scene, camera); });
+    await mind.start();
+    $('#arStart').hidden = true;
+    box.append(h('div', { class: 'arframe', id: 'arFrame' }), h('div', { class: 'arstatus' }, h('span', { class: 'arpill', id: 'arPill' }, '🔍 Mencari kartu…'), h('button', { class: 'arpill', onclick: stopScan }, '✕ Tutup')));
+    $('#arStop').hidden = false; $('#arPrep').hidden = true;
+    $('#arSheetTitle').textContent = 'Arahkan kamera ke kartu';
+    $('#arSheetHint').textContent = 'Pegang HP ±20–40 cm dari kartu. Pastikan seluruh kartu terlihat dan cukup terang.';
+    S.arUsed = true;
+  } catch (e) {
+    console.error(e); stopScan();
+    arError('<b>Modul AR gagal dimuat.</b> Periksa koneksi internet lalu coba lagi. (' + (e && e.message ? e.message : 'unknown') + ')');
+  } finally { go.disabled = false; go.textContent = 'Nyalakan kamera'; }
+}
+function arFound(i) {
+  if (!scan) return;
+  scanActive = i;
+  scan.stages.forEach((s, j) => { s.st.active = j === i; s.wrap.hidden = j !== i; });
+  const k = KEYS[i]; S.visited.add(k); renderSteps();
+  $('#arSheetTitle').textContent = `${i + 1} · ${NAMES[k]}`;
+  $('#arSheetHint').textContent = 'Sentuh atau seret objek di layar kamera, atau gunakan kontrol di bawah.';
+  const pill = $('#arPill'); if (pill) pill.textContent = `✅ Kartu ${i + 1}: ${NAMES[k]}`;
+  const fr = $('#arFrame'); if (fr) fr.style.display = 'none';
+}
+function arLost(i) {
+  if (!scan || scanActive !== i) return;
+  scan.stages[i].st.active = false;
+  const pill = $('#arPill'); if (pill) pill.textContent = '🔍 Kartu hilang. Arahkan lagi…';
+  const fr = $('#arFrame'); if (fr) fr.style.display = '';
+}
+function stopScan() {
+  if (!scan) return;
+  const { mind, stages } = scan; scan = null; scanActive = -1;
+  try { mind.renderer.setAnimationLoop(null); } catch (e) {}
+  try { mind.stop(); } catch (e) {}
+  stages.forEach(s => s.st.destroy());
+  try { mind.renderer.dispose(); } catch (e) {}
+  const box = $('#arCam');
+  [...box.children].forEach(c => { if (c.id !== 'arStart') c.remove(); });
+  $('#arStart').hidden = false; $('#arStop').hidden = true; $('#arPrep').hidden = false; $('#arPanel').innerHTML = '';
+  $('#arSheetTitle').textContent = 'Belum ada kartu terdeteksi';
+  $('#arSheetHint').textContent = 'Siapkan kartu: cetak PDF kartu, atau tampilkan gambar kartu di layar laptop lalu pindai dengan HP.';
+}
+
+/* =========================================================
+   AI Visual Challenge — generator (GenAI / backend / simulation)
+   ========================================================= */
+const AI = {
+  mode: 'sim', sample: null, prefer: 'auto', disabled: false,
+  get active() { return this.prefer === 'sim' ? 'sim' : this.mode; },
+  checking: false,
+  async init() {
+    if (this.checking || this.mode === 'claude') return;
+    if (window.GESTALT_AI_ENDPOINT) { this.mode = 'endpoint'; renderAIStatus(); return; }
+    this.checking = true; renderAIStatus();
+    try {
+      // The Claude runtime may be injected after this script runs: wait for it (max ±12 s).
+      for (let i = 0; i < 28 && !(window.claude && typeof window.claude.use === 'function'); i++) await new Promise(r => setTimeout(r, 250));
+      if (window.claude && typeof window.claude.use === 'function') {
+        const s = await window.claude.use('sample');
+        if (s) { this.sample = s; this.mode = 'claude'; this.prefer = 'auto'; }
+      }
+    } catch (e) { console.warn('GenAI init:', e); }
+    this.checking = false; renderAIStatus();
+  }
+};
+function renderAIStatus() {
+  const chip = $('#aiChip'), txt = $('#aiChipTxt');
+  const m = AI.active;
+  chip.className = 'chip ' + (m === 'sim' ? 'ai-sim' : 'ai-on');
+  txt.textContent = AI.checking && m === 'sim' ? 'Menghubungkan GenAI…' : m === 'claude' ? 'GenAI aktif · Claude' : m === 'endpoint' ? 'GenAI aktif · API' : 'GenAI: mode simulasi';
+  const line = $('#aiStatusLine');
+  if (line) line.innerHTML = `<b>Status saat ini:</b> ${m === 'claude' ? 'terhubung ke Claude melalui runtime platform.' : m === 'endpoint' ? 'terhubung ke backend: ' + window.GESTALT_AI_ENDPOINT : 'mode simulasi (generator lokal berbasis aturan).'}`;
+  const segEl = $('#srcSeg');
+  if (segEl && !segEl.dataset.built) {
+    segEl.dataset.built = '1';
+  }
+  if (segEl) {
+    segEl.innerHTML = '';
+    const opts = [{ k: 'auto', n: AI.mode === 'sim' ? 'GenAI (tidak tersedia)' : 'GenAI' }, { k: 'sim', n: 'Simulasi lokal' }];
+    opts.forEach(o => segEl.append(h('button', { 'aria-pressed': String(AI.prefer === o.k), disabled: o.k === 'auto' && AI.mode === 'sim', onclick: () => { AI.prefer = o.k; renderAIStatus(); } }, o.n)));
+    const note = $('#srcNote'); note.innerHTML = '';
+    if (AI.checking && AI.mode === 'sim') note.textContent = 'Sedang menghubungkan ke GenAI…';
+    else if (AI.mode === 'sim') note.append('GenAI belum terhubung di lingkungan ini, jadi latihan dibuat oleh generator simulasi dengan skema yang sama. ',
+      h('button', { class: 'linkbtn', onclick: () => AI.init() }, 'Coba hubungkan ulang'));
+    else note.textContent = AI.mode === 'claude'
+      ? 'Latihan dibuat oleh Claude. Saat soal pertama dibuat, browser bisa meminta izin. Pilih “Izinkan” agar GenAI aktif.'
+      : 'Latihan dibuat oleh model GenAI melalui backend. Pilih “Simulasi lokal” untuk membandingkan.';
+  }
+}
+
+/* ---------- validated parameter helpers ---------- */
+const oneOf = (v, arr, d) => arr.includes(v) ? v : d;
+const nIn = (v, a, b, d) => { const n = Number(v); return Number.isFinite(n) ? clamp(n, a, b) : d; };
+const iIn = (v, a, b, d) => Math.round(nIn(v, a, b, d));
+const hex = (v, d) => hexToRgb(v) ? String(v).trim() : d;
+
+/* ---------- composition generators: params → list of elements ---------- */
+function fitElems(els, W = 10.5, H = 6.2) {
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  const ext = e => e.t === 'poly' ? null : (e.s ? e.s / 2 : e.r2 || e.r || Math.max(e.w || 0, e.h || 0) / 2);
+  els.forEach(e => {
+    if (e.t === 'poly') e.pts.forEach(([px, py]) => { x0 = Math.min(x0, e.x + px); x1 = Math.max(x1, e.x + px); y0 = Math.min(y0, e.y + py); y1 = Math.max(y1, e.y + py); });
+    else { const r = ext(e); x0 = Math.min(x0, e.x - r); x1 = Math.max(x1, e.x + r); y0 = Math.min(y0, e.y - r); y1 = Math.max(y1, e.y + r); }
+  });
+  const k = Math.min(1.25, W / (x1 - x0), H / (y1 - y0)), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  els.forEach(e => {
+    e.x = (e.x - cx) * k; e.y = (e.y - cy) * k;
+    ['s', 'w', 'h', 'r', 'r1', 'r2'].forEach(p => { if (e[p] != null) e[p] *= k; });
+    if (e.pts) e.pts = e.pts.map(([a, b]) => [a * k, b * k]);
+  });
+  return els;
+}
+const GEN = {
+  proximity(p) {
+    const v = oneOf(p.variant, ['row', 'column', 'grid'], 'row'), G = iIn(p.groups, 2, 5, 3), n = iIn(p.perGroup, 2, 6, 4);
+    const gap = nIn(p.gap, 1.2, 3, 2), shape = oneOf(p.shape, ['circle', 'square', 'triangle'], 'circle'), c = hex(p.color, C.ink);
+    const sp = .7, k = Math.ceil(Math.sqrt(n)), rows = Math.ceil(n / k), cw = (k - 1) * sp, ch = (rows - 1) * sp, g2 = Math.ceil(Math.sqrt(G));
+    const els = [];
+    for (let i = 0; i < G; i++) {
+      let gx = 0, gy = 0;
+      if (v === 'row') gx = i * (cw + gap); else if (v === 'column') gy = -i * (ch + gap); else { gx = (i % g2) * (cw + gap); gy = -Math.floor(i / g2) * (ch + gap); }
+      for (let j = 0; j < n; j++) els.push({ t: shape, x: gx + (j % k) * sp, y: gy - Math.floor(j / k) * sp, s: .5, c });
+    }
+    return { v, els: fitElems(els), facts: { G, n, gap, shape } };
+  },
+  similarity(p) {
+    const v = oneOf(p.variant, ['rows', 'cols', 'checker', 'diagonal'], 'cols'), R = iIn(p.rows, 3, 6, 4), Cc = iIn(p.cols, 3, 7, 5);
+    const mode = oneOf(p.mode, ['color', 'shape', 'both'], 'color');
+    const cols = Array.isArray(p.colors) ? p.colors : [], shapes = Array.isArray(p.shapes) ? p.shapes : [];
+    const c1 = hex(cols[0], C.grey), c2 = hex(cols[1], C.accent);
+    const s1 = oneOf(shapes[0], ['circle', 'square', 'triangle'], 'circle'); let s2 = oneOf(shapes[1], ['circle', 'square', 'triangle'], 'square'); if (s2 === s1) s2 = s1 === 'square' ? 'circle' : 'square';
+    const cls = (r, c) => v === 'rows' ? r % 2 : v === 'cols' ? c % 2 : v === 'checker' ? (r + c) % 2 : ((c - r + 30) % 3 === 0 ? 1 : 0);
+    const els = [];
+    for (let r = 0; r < R; r++) for (let c = 0; c < Cc; c++) {
+      const k = cls(r, c);
+      els.push({ t: mode === 'color' ? s1 : (k ? s2 : s1), c: mode === 'shape' ? C.ink : (k ? c2 : c1), x: c * 1, y: -r * 1, s: .56 });
+    }
+    return { v, els: fitElems(els, 9, 5.8), facts: { v, mode } };
+  },
+  closure(p) {
+    const v = oneOf(p.variant, ['kanizsa', 'kanizsa-square', 'broken-circle', 'dashed-square'], 'kanizsa'), c = hex(p.color, C.ink);
+    const n = iIn(p.pieces, 4, 12, 8), gap = nIn(p.gap, .15, .6, .35); const els = [];
+    if (v === 'kanizsa') [90, 210, 330].forEach(a => els.push({ t: 'pac', x: 2.2 * Math.cos(rad(a)), y: 2.2 * Math.sin(rad(a)), r: .85, mouth: 60, rot: a + 180, c }));
+    else if (v === 'kanizsa-square') [45, 135, 225, 315].forEach(a => els.push({ t: 'pac', x: 2.4 * Math.cos(rad(a)), y: 2.4 * Math.sin(rad(a)), r: .8, mouth: 90, rot: a + 180, c }));
+    else if (v === 'broken-circle') { const st = Math.PI * 2 / n, L = st * (1 - gap); for (let i = 0; i < n; i++) { const m = i * st + .3; els.push({ t: 'arc', x: 0, y: 0, r1: 2.05, r2: 2.45, a0: m - L / 2, a1: m + L / 2, c }); } }
+    else { const m = Math.max(2, Math.round(n / 2)), side = 4.4, seg = side / m, L = seg * (1 - gap);
+      for (let s = 0; s < 4; s++) for (let i = 0; i < m; i++) { const t = -side / 2 + seg * (i + .5); const pos = [[t, side / 2], [side / 2, -t], [-t, -side / 2], [-side / 2, t]][s]; els.push({ t: 'bar', x: pos[0], y: pos[1], w: s % 2 ? .3 : L, h: s % 2 ? L : .3, c }); } }
+    return { v, els: fitElems(els, 8, 5.8), facts: { v, gap, n } };
+  },
+  continuity(p) {
+    const v = oneOf(p.variant, ['crossing', 'occluded-wave', 'spiral'], 'crossing'), N = iIn(p.beads, 14, 40, 26), c = hex(p.color, C.ink), oc = hex(p.occluderColor, C.accent);
+    const els = [];
+    if (v === 'crossing') {
+      for (let i = 0; i < N; i++) { const x = -5 + 10 * i / (N - 1); els.push({ t: 'circle', x, y: .42 * x + .5 * Math.sin(1.25 * x), s: .28, c }); els.push({ t: 'circle', x, y: -.42 * x + .5 * Math.sin(1.25 * x + 1.4), s: .28, c }); }
+    } else if (v === 'occluded-wave') {
+      for (let i = 0; i < N; i++) { const x = -5 + 10 * i / (N - 1); if (Math.abs(x) < 1.3) continue; els.push({ t: 'circle', x, y: 1.4 * Math.sin(.8 * x + .4), s: .3, c }); }
+      els.push({ t: 'rect', x: 0, y: 0, w: 2.2, h: 4.4, c: oc, z: .25, depth: .3 });
+    } else {
+      let th = 0; for (let i = 0; i < N * 1.4; i++) { const r = .25 + .3 * th; els.push({ t: 'circle', x: r * Math.cos(th), y: r * Math.sin(th), s: .26, c }); th += .42 / Math.max(.4, r); }
+    }
+    return { v, els: fitElems(els), facts: { v, N } };
+  },
+  'figure-ground'(p) {
+    const v = oneOf(p.variant, ['vase', 'negative-plus'], 'vase');
+    let fc = hex(p.figureColor, C.ink), gc = hex(p.groundColor, C.white);
+    if (contrast(fc, gc) < 3) { fc = C.ink; gc = C.white; }
+    const els = [];
+    if (v === 'vase') { const P = vasePolys(); els.push({ t: 'poly', x: 0, y: 0, pts: P.vase, c: fc }, { t: 'poly', x: 0, y: 0, pts: P.left, c: gc }, { t: 'poly', x: 0, y: 0, pts: P.right, c: gc }); }
+    else { els.push({ t: 'rect', x: 0, y: 0, w: 5.6, h: 5.6, c: gc, z: -.12, depth: .06 }); [[-1.4, 1.4], [1.4, 1.4], [-1.4, -1.4], [1.4, -1.4]].forEach(([x, y]) => els.push({ t: 'square', x, y, s: 2.2, c: fc })); }
+    return { v, els: fitElems(els, 7, 5.8), facts: { v, cr: contrast(fc, gc) } };
+  }
+};
+
+/* ---------- simulation generator (transparent fallback) ---------- */
+const SCEN = {
+  proximity: [['Kartu menu aplikasi kafe', 'Desainer menata ikon fitur pada layar beranda aplikasi pemesanan.'], ['Galeri foto portofolio', 'Thumbnail karya disusun pada halaman portofolio daring.'], ['Dasbor kebugaran', 'Indikator aktivitas harian ditata pada dasbor aplikasi olahraga.'], ['Katalog tipografi', 'Contoh huruf disusun pada halaman spesimen font.']],
+  similarity: [['Legenda infografis', 'Perancang infografis memberi kode visual pada titik data kategori.'], ['Papan status proyek', 'Kartu tugas pada papan kerja tim ditandai dengan gaya berbeda.'], ['Pola kemasan minuman', 'Motif grafis untuk kemasan seri minuman baru.'], ['Kalender acara', 'Jenis acara dibedakan pada tampilan kalender bulanan.']],
+  closure: [['Logo studio desain', 'Konsep logo minimalis untuk sebuah studio desain grafis.'], ['Ikon pemuatan aplikasi', 'Animasi indikator loading pada aplikasi seluler.'], ['Bingkai poster pameran', 'Elemen grafis pembingkai pada poster pameran seni.'], ['Simbol penunjuk arah', 'Piktogram untuk sistem penanda (signage) gedung.']],
+  continuity: [['Diagram alur layanan', 'Garis penghubung pada infografis alur layanan.'], ['Peta rute kereta', 'Dua jalur rute pada peta transportasi kota.'], ['Ornamen sampul buku', 'Elemen dekoratif pada sampul buku nonfiksi.'], ['Animasi intro video', 'Jejak titik pada animasi pembuka video kanal edukasi.']],
+  'figure-ground': [['Logo ruang negatif', 'Eksplorasi logo yang memakai ruang negatif untuk bentuk kedua.'], ['Poster kontras tinggi', 'Poster satu warna untuk festival film pendek.'], ['Ilustrasi editorial', 'Ilustrasi pembuka artikel majalah tentang persepsi.'], ['Stiker kemasan', 'Stiker bentuk potong (die-cut) untuk kemasan produk.']]
+};
+const shapeID = { circle: 'lingkaran', square: 'persegi', triangle: 'segitiga' };
+function simText(pr, g) {
+  const f = g.facts;
+  switch (pr) {
+    case 'proximity': return { hint: 'Perhatikan ruang kosong. Apa yang berubah dan apa yang tetap sama?', explanation: `Semua elemen identik (${shapeID[f.shape]} dengan warna sama), jadi satu-satunya variabel pembeda adalah jarak. Celah antar-kelompok jauh lebih besar daripada jarak di dalam kelompok, sehingga mata membaca ${f.G} kelompok berisi ${f.n} elemen. Itulah Proximity.` };
+    case 'similarity': return { hint: 'Jarak antar-elemen seragam. Lalu apa yang membuat sebagian elemen terasa “sekelompok”?', explanation: `Jarak di grid ini seragam, jadi pengelompokan muncul dari kemiripan ${f.mode === 'color' ? 'warna' : f.mode === 'shape' ? 'bentuk' : 'warna dan bentuk'}. Elemen yang mirip terbaca sebagai ${f.v === 'rows' ? 'baris' : f.v === 'cols' ? 'kolom' : 'pola diagonal'}. Itulah Similarity.` };
+    case 'closure': return { hint: 'Apakah ada garis yang benar-benar menutup bentuk itu?', explanation: f.v.startsWith('kanizsa') ? `Tidak ada garis tepi ${f.v === 'kanizsa' ? 'segitiga' : 'persegi'} yang digambar. Bukaan lingkaran-terpotong yang sejajar membuat otak “menutup” kontur ilusi. Itulah Closure (efek Kanizsa).` : `Bentuknya terputus dengan ±${Math.round(f.gap * 100)}% kontur hilang, tetapi tetap terbaca sebagai ${f.v === 'broken-circle' ? 'lingkaran' : 'persegi'} utuh karena otak melengkapi celahnya. Itulah Closure.` };
+    case 'continuity': return { hint: 'Ikuti titik-titik dengan matamu. Jalur mana yang terasa paling “alami”?', explanation: f.v === 'crossing' ? 'Kedua deret titik sewarna dan bersilangan. Mata tetap membacanya sebagai dua garis mulus yang bersilangan, bukan dua bentuk V yang bersentuhan, karena memilih jalur dengan perubahan arah terkecil. Itulah Continuity.' : f.v === 'occluded-wave' ? 'Gelombang titik terpotong oleh bidang di tengah, tetapi mata menyambungkan kedua sisi menjadi satu gelombang yang berlanjut di belakang bidang. Itulah Continuity.' : 'Titik-titik membentuk spiral dan mata meluncur mengikuti alurnya dari pusat ke luar tanpa terputus. Itulah Continuity.' };
+    default: return { hint: 'Coba fokus pada area hitam, lalu pada area terang. Apa yang kamu lihat?', explanation: f.v === 'vase' ? 'Komposisi ini dapat dibaca sebagai vas atau dua profil wajah yang berhadapan. Persepsi berganti tergantung bidang mana yang dianggap figur dan mana yang latar. Itulah Figure-Ground (Vas Rubin).' : 'Empat persegi gelap adalah figur, tetapi ruang negatif di antaranya membentuk tanda tambah. Persepsi dapat berpindah antara figur dan latar. Itulah Figure-Ground.' };
+  }
+}
+function simParams(pr) {
+  const darkish = [C.ink, '#3d3a35', C.blue, '#7a2e14'], accent = [C.accent, C.blue, C.teal, C.yellow];
+  switch (pr) {
+    case 'proximity': return { variant: pick(['row', 'column', 'grid']), groups: rndi(2, 4), perGroup: rndi(3, 6), gap: rnd(1.4, 2.6), shape: pick(['circle', 'square', 'triangle']), color: pick(darkish) };
+    case 'similarity': { const mode = pick(['color', 'shape', 'both']); return { variant: pick(['rows', 'cols', 'cols', 'checker', 'diagonal']), rows: rndi(4, 5), cols: rndi(5, 7), mode, colors: [C.grey, pick(accent)], shapes: [pick(['circle', 'square']), pick(['triangle', 'square', 'circle'])] }; }
+    case 'closure': return { variant: pick(['kanizsa', 'kanizsa-square', 'broken-circle', 'dashed-square']), pieces: rndi(5, 10), gap: rnd(.25, .5), color: pick(darkish) };
+    case 'continuity': return { variant: pick(['crossing', 'occluded-wave', 'spiral']), beads: rndi(22, 34), color: pick(darkish), occluderColor: pick(accent) };
+    default: { const dark = Math.random() < .7; return { variant: pick(['vase', 'negative-plus']), figureColor: dark ? C.ink : C.blue, groundColor: C.white }; }
+  }
+}
+function chooseTarget(target) {
+  if (target !== 'random') return target;
+  const last = S.ai.recent.at(-1)?.principle;
+  const w = KEYS.map(k => (k === last ? .3 : 1) + S.ai.wrong[k] * 1.5);
+  let r = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < KEYS.length; i++) { r -= w[i]; if (r <= 0) return KEYS[i]; }
+  return KEYS[0];
+}
+function simulate(target) {
+  const pr = chooseTarget(target);
+  const params = simParams(pr);
+  const g = GEN[pr](params);
+  const [title, scenario] = pick(SCEN[pr].filter(s => !S.ai.recent.some(r => r.title === s[0])).concat(SCEN[pr]).slice(0, 4));
+  return { principle: pr, title, scenario, params, question: 'Prinsip Gestalt apa yang paling dominan membentuk persepsi pada komposisi ini?', ...simText(pr, g) };
+}
+
+/* ---------- GenAI request ---------- */
+function buildPrompt(target) {
+  const weak = KEYS.filter(k => S.ai.wrong[k] > 0).sort((a, b) => S.ai.wrong[b] - S.ai.wrong[a]);
+  const recent = S.ai.recent.slice(-4).map(r => `${r.principle}: ${r.title}`).join('; ') || '-';
+  return `Kamu adalah generator latihan visual untuk mahasiswa Desain Komunikasi Visual yang mempelajari prinsip Gestalt. Buat SATU tantangan identifikasi baru.
+
+Prinsip target: ${target === 'random' ? `pilih salah satu dari proximity, similarity, closure, continuity, figure-ground${weak.length ? `. Utamakan prinsip yang sering salah dijawab mahasiswa: ${weak.join(', ')}` : ''}` : target}.
+Hindari mengulang tantangan terakhir: ${recent}.
+
+Aturan:
+- Bahasa Indonesia yang jelas dan akademis; nama prinsip tetap dalam bahasa Inggris (Proximity, Similarity, Closure, Continuity, Figure-Ground).
+- Jangan memakai unsur budaya lokal/daerah; gunakan konteks desain umum (aplikasi, poster, infografis, logo, kemasan, signage).
+- Komposisi digambar oleh renderer kami dari parameter. Pilih parameter sehingga prinsip target menjadi variabel pembeda yang paling dominan (contoh: proximity → bentuk & warna seragam, hanya jarak yang berbeda; similarity → jarak seragam, hanya atribut yang berbeda).
+- Jangan menyebut nama prinsip jawaban di "title", "scenario", "question", atau "hint".
+
+Skema "params" per prinsip (patuhi rentang):
+- proximity: {"variant":"row"|"column"|"grid","groups":2-5,"perGroup":2-6,"gap":1.2-3.0,"shape":"circle"|"square"|"triangle","color":"#RRGGBB"}
+- similarity: {"variant":"rows"|"cols"|"checker"|"diagonal","rows":3-6,"cols":3-7,"mode":"color"|"shape"|"both","colors":["#RRGGBB","#RRGGBB"],"shapes":["circle"|"square"|"triangle","circle"|"square"|"triangle"]}
+- closure: {"variant":"kanizsa"|"kanizsa-square"|"broken-circle"|"dashed-square","pieces":4-12,"gap":0.15-0.6,"color":"#RRGGBB"}
+- continuity: {"variant":"crossing"|"occluded-wave"|"spiral","beads":14-40,"color":"#RRGGBB","occluderColor":"#RRGGBB"}
+- figure-ground: {"variant":"vase"|"negative-plus","figureColor":"#RRGGBB","groundColor":"#RRGGBB"} (kontras tinggi)
+Palet yang disarankan: netral (#151515, #a19d94, #fbfaf7) dengan aksen (#ff4757, #2948e0, #0f9488, #f0b400).
+
+Balas HANYA dengan satu objek JSON valid, tanpa teks lain:
+{"principle":"proximity|similarity|closure|continuity|figure-ground","title":"judul singkat ≤ 6 kata","scenario":"1 kalimat konteks desain nyata","params":{...},"question":"pertanyaan identifikasi","hint":"petunjuk tanpa membocorkan jawaban","explanation":"2–3 kalimat: mengapa prinsip ini dominan, variabel visual apa yang bekerja, dan kaitannya dengan skenario"}`;
+}
+function parseJSONLoose(v) {
+  if (v && typeof v === 'object') return v;
+  const s = String(v || ''); const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a < 0 || b < a) throw new Error('Respons GenAI tidak berisi JSON');
+  return JSON.parse(s.slice(a, b + 1));
+}
+function normalize(raw, target) {
+  const pr = String(raw.principle || '').toLowerCase().replace(/\s|_/g, '-');
+  if (!KEYS.includes(pr)) throw new Error('Prinsip tidak valid: ' + raw.principle);
+  if (target !== 'random' && pr !== target) throw new Error('Prinsip tidak sesuai target');
+  const t = (v, d, n = 400) => (typeof v === 'string' && v.trim()) ? v.trim().slice(0, n) : d;
+  return { principle: pr, title: t(raw.title, 'Tantangan visual', 80), scenario: t(raw.scenario, ''), params: raw.params && typeof raw.params === 'object' ? raw.params : {}, question: t(raw.question, 'Prinsip Gestalt apa yang paling dominan pada komposisi ini?', 220), hint: t(raw.hint, ''), explanation: t(raw.explanation, '', 700) };
+}
+async function generate(target) {
+  const mode = AI.active;
+  if (mode === 'claude') {
+    try {
+      const v = await AI.sample.json(buildPrompt(target), { modelTier: 'quick' });
+      return { spec: normalize(parseJSONLoose(v), target), source: 'claude' };
+    } catch (e) {
+      console.warn('GenAI gagal, beralih ke simulasi:', e);
+      if (e && e.code === 'not_granted') { AI.mode = 'sim'; renderAIStatus(); return { spec: simulate(target), source: 'sim', note: 'Izin GenAI tidak diberikan, jadi soal ini dibuat oleh generator simulasi.' }; }
+      if (e && e.code === 'rate_limited') return { spec: simulate(target), source: 'sim', note: 'GenAI sedang dibatasi sementara, jadi soal ini dibuat oleh generator simulasi. Coba lagi sebentar lagi.' };
+      return { spec: simulate(target), source: 'sim', note: 'GenAI tidak merespons dengan benar, jadi soal ini dibuat oleh generator simulasi.' };
+    }
+  }
+  if (mode === 'endpoint') {
+    try {
+      const weak = KEYS.filter(k => S.ai.wrong[k] > 0).sort((a, b) => S.ai.wrong[b] - S.ai.wrong[a]);
+      const recent = S.ai.recent.slice(-4).map(r => `${r.principle}: ${r.title}`);
+      const r = await fetch(window.GESTALT_AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target, recent, weak }) });
+      if (r.status === 429) return { spec: simulate(target), source: 'sim', note: 'Batas permintaan GenAI tercapai, jadi soal ini dibuat oleh generator simulasi. Coba lagi beberapa menit lagi.' };
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return { spec: normalize(parseJSONLoose(await r.json()), target), source: 'endpoint' };
+    } catch (e) {
+      console.warn('Backend GenAI gagal:', e);
+      return { spec: simulate(target), source: 'sim', note: 'Backend GenAI tidak dapat dihubungi, jadi soal ini dibuat oleh generator simulasi.' };
+    }
+  }
+  await new Promise(r => setTimeout(r, 450));
+  return { spec: simulate(target), source: 'sim' };
+}
+
+/* ---------- Challenge rendering & flow ---------- */
+let chalStage, chalTarget = 'random', curSpec = null, answered = false;
+function elMesh(e) {
+  let g; const d = e.depth ?? .16;
+  switch (e.t) {
+    case 'circle': g = new THREE.CylinderGeometry(e.s / 2, e.s / 2, d, 40); g.rotateX(Math.PI / 2); break;
+    case 'square': g = new THREE.BoxGeometry(e.s, e.s, d); break;
+    case 'triangle': g = extrude(triShape(e.s), d, false); break;
+    case 'bar': g = new THREE.BoxGeometry(e.w, e.h, d); break;
+    case 'rect': g = new THREE.BoxGeometry(e.w, e.h, d); break;
+    case 'arc': g = extrude(arcShape(e.r1, e.r2, e.a0, e.a1), d, false); break;
+    case 'pac': g = extrude(pacShape(e.r, e.mouth), d, false); break;
+    case 'poly': g = extrude(polyShape(e.pts), d, false); break;
+    default: g = new THREE.BoxGeometry(.4, .4, d);
+  }
+  const m = shadowy(new THREE.Mesh(g, mat(e.c || C.ink)));
+  m.position.set(e.x || 0, e.y || 0, e.z || 0); m.rotation.z = rad(e.rot || 0);
+  return m;
+}
+function ensureChal() {
+  if (chalStage) return;
+  chalStage = new Stage($('#chalStage'));
+  chalStage.setBoard('#f3f6ff'); chalStage.setView(11, 6.6, .1);
+  const chips = $('#targetChips');
+  const opts = [{ k: 'random', n: '✦ Acak' }, ...KEYS.map(k => ({ k, n: NAMES[k] }))];
+  const paint = () => [...chips.children].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === chalTarget)));
+  opts.forEach(o => chips.append(h('button', { 'data-k': o.k, onclick: () => { chalTarget = o.k; paint(); } }, o.n)));
+  paint();
+  $('#genBtn').onclick = newChallenge; $('#nextBtn').onclick = newChallenge;
+  $('#hintBtn').onclick = () => { $('#hintText').hidden = false; $('#hintBtn').hidden = true; };
+  renderAIStatus();
+}
+async function newChallenge() {
+  const btn = $('#genBtn'); btn.disabled = true;
+  if (AI.mode === 'sim' && !AI.checking && window.claude && AI.prefer !== 'sim') await AI.init();
+  $('#loadingTxt').textContent = AI.active === 'sim' ? 'Generator simulasi menyusun latihan…' : 'GenAI sedang menyusun latihan…';
+  $('#chalLoading').classList.add('on');
+  let res;
+  try { res = await generate(chalTarget); } finally { $('#chalLoading').classList.remove('on'); btn.disabled = false; }
+  curSpec = res.spec; answered = false;
+  const g = GEN[curSpec.principle](curSpec.params);
+  chalStage.clear(); chalStage.setBoard('#f3f6ff');
+  chalStage.setView(curSpec.principle === 'figure-ground' || curSpec.principle === 'closure' ? 8.5 : 11, 6.6, .1);
+  g.els.forEach((e, i) => {
+    const m = elMesh(e); m.scale.setScalar(.001); chalStage.add(m);
+    setTimeout(() => chalStage.animate(380, k => m.scale.setScalar(Math.max(.001, k))), Math.min(900, i * 18));
+  });
+  const src = $('#srcTag'); src.className = 'src' + (res.source === 'sim' ? '' : ' ai');
+  src.querySelector('span').textContent = res.source === 'claude' ? 'Dibuat oleh GenAI · Claude' : res.source === 'endpoint' ? 'Dibuat oleh GenAI · API' : 'Mode simulasi · generator lokal';
+  $('#scenTitle').textContent = curSpec.title;
+  $('#scenText').textContent = curSpec.scenario + (res.note ? ' (' + res.note + ')' : '');
+  $('#qbox').hidden = false; $('#qText').textContent = curSpec.question;
+  $('#hintText').textContent = curSpec.hint || 'Amati variabel visual mana yang berbeda dan mana yang dibuat seragam.';
+  $('#hintText').hidden = true; $('#hintBtn').hidden = false;
+  $('#fb').className = 'fb'; $('#nextRow').hidden = true;
+  const ans = $('#answers'); ans.innerHTML = '';
+  KEYS.forEach(k => ans.append(h('button', { class: 'ans', 'data-k': k, onclick: () => answer(k) }, h('span', { html: ICON[k] }), NAMES[k], h('small', {}, IDN[k]))));
+  $('#specBox').hidden = false;
+  $('#specPre').textContent = JSON.stringify({ source: res.source, ...curSpec, rendered: { variant: g.v, elements: g.els.length } }, null, 2);
+}
+function answer(k) {
+  if (answered || !curSpec) return; answered = true;
+  const ok = k === curSpec.principle;
+  S.ai.answered++; if (ok) S.ai.correct++; else S.ai.wrong[curSpec.principle]++;
+  S.ai.recent.push({ principle: curSpec.principle, title: curSpec.title });
+  $$('#answers .ans').forEach(b => { b.disabled = true; if (b.dataset.k === curSpec.principle) b.classList.add('right'); else if (b.dataset.k === k) b.classList.add('wrong'); });
+  const fb = $('#fb'); fb.innerHTML = '';
+  fb.append(h('b', {}, ok ? '✓ Tepat!' : `✗ Belum tepat. Jawabannya ${NAMES[curSpec.principle]}.`), h('span', {}, curSpec.explanation || ''));
+  if (!ok) fb.append(h('div', { style: 'margin-top:8px' }, h('button', { class: 'linkbtn', onclick: () => { const k = curSpec.principle; go('room'); openPrinciple(k); } }, `Ulas kembali ${NAMES[curSpec.principle]} di Learning Room →`)));
+  fb.className = 'fb on ' + (ok ? 'ok' : 'no');
+  $('#nextRow').hidden = false; $('#hintBtn').hidden = true;
+  $('#stAns').textContent = S.ai.answered; $('#stOk').textContent = S.ai.correct;
+  $('#stAcc').textContent = Math.round(100 * S.ai.correct / S.ai.answered) + '%';
+  if (S.ai.answered === 3) toast('Target AI Challenge tercapai (3 soal) ✓', 'ok');
+  renderSteps();
+}
+
+/* =========================================================
+   Evaluation quiz
+   ========================================================= */
+const dots = (pts, c = '#151515', r = 6) => pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('');
+const QUIZ = [
+  { p: 'proximity', q: 'Kedua belas lingkaran ini identik. Mengapa kebanyakan orang langsung melihat tiga kelompok?',
+    svg: `<svg viewBox="0 0 300 120">${[30, 120, 210].map(gx => dots([[gx, 40], [gx + 22, 40], [gx, 75], [gx + 22, 75]])).join('')}</svg>`,
+    a: 0, why: 'Bentuk dan warnanya sama. Satu-satunya pembeda adalah jarak: celah antar-kelompok lebih lebar daripada jarak di dalam kelompok.' },
+  { p: 'similarity', q: 'Jarak semua lingkaran sama, tetapi grid ini terbaca sebagai kolom-kolom. Prinsip apa yang bekerja?',
+    svg: `<svg viewBox="0 0 300 120">${[0, 1, 2, 3, 4, 5].map(c => dots([0, 1, 2].map(r => [55 + c * 38, 25 + r * 35]), c % 2 ? '#ff4757' : '#a19d94', 9)).join('')}</svg>`,
+    a: 1, why: 'Karena jaraknya seragam, pengelompokan muncul dari kesamaan warna: kolom berwarna sama dibaca sebagai satu kelompok.' },
+  { p: 'closure', q: 'Konturnya terputus di banyak tempat, tetapi kita tetap melihat lingkaran. Fenomena ini disebut…',
+    svg: `<svg viewBox="0 0 300 120"><circle cx="150" cy="60" r="44" fill="none" stroke="#151515" stroke-width="10" stroke-dasharray="26 16"/></svg>`,
+    a: 2, why: 'Otak melengkapi celah pada bentuk yang tidak utuh menjadi bentuk utuh yang dikenal (Closure).' },
+  { p: 'continuity', q: 'Mengapa gambar ini terbaca sebagai dua garis yang bersilangan, bukan dua bentuk “V” yang saling menempel?',
+    svg: `<svg viewBox="0 0 300 120">${dots(Array.from({ length: 15 }, (_, i) => [40 + i * 15.7, 15 + i * 6.4]), '#151515', 4.5)}${dots(Array.from({ length: 15 }, (_, i) => [40 + i * 15.7, 105 - i * 6.4]), '#151515', 4.5)}</svg>`,
+    a: 3, why: 'Mata mengikuti jalur dengan perubahan arah terkecil. Di titik silang, jalur lurus lebih “kuat” daripada belokan tajam (Continuity).' },
+  { p: 'figure-ground', q: 'Sebagian orang melihat empat kotak hitam, sebagian lagi melihat tanda tambah putih di tengahnya. Pergantian persepsi ini paling tepat dijelaskan oleh…',
+    svg: `<svg viewBox="0 0 300 120"><rect x="95" y="5" width="110" height="110" fill="#fbfaf7"/>${[[95, 5], [155, 5], [95, 65], [155, 65]].map(([x, y]) => `<rect x="${x}" y="${y}" width="50" height="50" fill="#151515"/>`).join('')}</svg>`,
+    a: 4, why: 'Bidang yang sama bisa dibaca sebagai figur (kotak) atau latar (ruang negatif berbentuk +). Itulah hubungan Figure-Ground.' },
+  { p: 'proximity', q: 'Pada formulir pendaftaran, label “Email” diletakkan rapat dengan kolom isiannya dan diberi jarak lebih lebar dari kolom “Nama” di atasnya. Prinsip yang paling dimanfaatkan adalah…',
+    svg: null, a: 0, why: 'Kedekatan posisi mengikat label dengan kolomnya, sementara jarak yang lebih lebar memisahkan pasangan label–kolom yang berbeda.' },
+  { p: 'similarity', q: 'Dalam sebuah artikel daring, semua tautan diberi warna biru dan garis bawah yang sama sehingga pembaca langsung mengenalinya sebagai elemen yang bisa diklik. Prinsip yang digunakan adalah…',
+    svg: null, a: 1, why: 'Atribut visual yang konsisten (warna dan garis bawah) membuat tautan dikelompokkan sebagai satu jenis elemen, di mana pun letaknya.' }
+];
+let qi = 0, qAns = [];
+function renderQuiz() {
+  const root = $('#quiz'); root.innerHTML = '';
+  if (S.quiz.done) return renderResult(root);
+  if (qi === 0 && !qAns.length) {
+    root.append(h('div', { class: 'qcard' }, h('span', { class: 'stag', style: '--c:var(--purple);--fg:#fff' }, '📝 Tahap 5 · Evaluasi'), h('h2', { style: 'font-size:30px;margin:8px 0 10px;letter-spacing:-.02em' }, 'Kuis singkat pemahaman'),
+      h('p', { class: 'def' }, `${QUIZ.length} soal pilihan ganda, ±3 menit: lima soal visual dan dua soal penerapan desain. Setiap jawaban langsung diberi umpan balik.`),
+      h('div', { class: 'summary', style: 'margin:16px 0' },
+        h('div', { class: 'stat' }, h('b', {}, `${S.visited.size}/5`), h('small', {}, 'prinsip dieksplorasi')),
+        h('div', { class: 'stat' }, h('b', {}, `${S.missions.size}/5`), h('small', {}, 'misi manipulasi')),
+        h('div', { class: 'stat' }, h('b', {}, `${S.ai.answered}`), h('small', {}, 'soal AI Challenge'))),
+      (S.missions.size < 5 || S.ai.answered < 3) ? h('p', { class: 'hint' }, 'Kamu tetap bisa mengerjakan kuis sekarang, tetapi hasil terbaik biasanya didapat setelah misi dan AI Challenge selesai.') : '',
+      h('div', { class: 'row', style: 'margin-top:16px' }, h('button', { class: 'btn yellow', onclick: () => { qAns = []; showQ(); } }, 'Mulai kuis →'))));
+    return;
+  }
+  showQ();
+}
+function showQ() {
+  const root = $('#quiz'); root.innerHTML = '';
+  const Q = QUIZ[qi], card = h('div', { class: 'qcard' });
+  card.append(h('div', { class: 'qtop' }, h('span', { class: 'mono', style: 'color:var(--muted)' }, `Soal ${qi + 1} dari ${QUIZ.length}`), h('span', { class: 'mono', style: 'color:var(--muted)' }, `Benar: ${qAns.filter(Boolean).length}`)),
+    h('div', { class: 'qbar' }, h('i', { style: `width:${(qi / QUIZ.length) * 100}%` })),
+    h('h3', { style: 'font-size:19px;letter-spacing:-.01em' }, Q.q));
+  if (Q.svg) card.append(h('div', { class: 'qfig', html: Q.svg }));
+  else card.append(h('div', { style: 'height:14px' }));
+  const opts = h('div', { class: 'qopts' }), fb = h('div', { class: 'fb' }), nx = h('div', { class: 'row', style: 'margin-top:14px', hidden: true });
+  KEYS.forEach((k, i) => opts.append(h('button', { class: 'ans', onclick: () => {
+    const ok = i === Q.a; qAns[qi] = ok;
+    [...opts.children].forEach((b, j) => { b.disabled = true; if (j === Q.a) b.classList.add('right'); else if (j === i) b.classList.add('wrong'); });
+    fb.innerHTML = ''; fb.append(h('b', {}, ok ? '✓ Benar' : `✗ Kurang tepat. Jawaban: ${NAMES[KEYS[Q.a]]}`), Q.why); fb.className = 'fb on ' + (ok ? 'ok' : 'no');
+    nx.hidden = false;
+  } }, h('span', { html: ICON[k] }), NAMES[k], h('small', {}, IDN[k]))));
+  nx.append(h('button', { class: 'btn', onclick: () => { qi++; if (qi >= QUIZ.length) finishQuiz(); else showQ(); } }, qi < QUIZ.length - 1 ? 'Soal berikutnya →' : 'Lihat hasil →'));
+  card.append(opts, fb, nx); root.append(card);
+}
+function finishQuiz() {
+  S.quiz.done = true; S.quiz.score = qAns.filter(Boolean).length;
+  S.quiz.per = {}; QUIZ.forEach((Q, i) => { (S.quiz.per[Q.p] ||= []).push(!!qAns[i]); });
+  renderSteps(); renderQuiz(); toast('Evaluasi selesai ✓', 'ok');
+}
+function renderResult(root) {
+  const sc = S.quiz.score, pct = Math.round(100 * sc / QUIZ.length);
+  const level = pct >= 85 ? 'Sangat baik' : pct >= 70 ? 'Baik' : pct >= 50 ? 'Cukup' : 'Perlu penguatan';
+  const mins = S.t0 ? Math.max(1, Math.round((Date.now() - S.t0) / 60000)) : 0;
+  const weak = KEYS.filter(k => (S.quiz.per[k] || []).some(v => !v) || S.ai.wrong[k] > 0);
+  root.append(h('div', { class: 'qcard result' },
+    h('span', { class: 'stag' }, '🏆 Hasil pemahaman'),
+    h('div', { class: 'score', style: 'margin:12px 0 4px' }, String(sc), h('small', {}, ` / ${QUIZ.length}`)),
+    h('p', { style: 'font-size:18px;margin:0' }, h('b', {}, level), ` · ${pct}%`),
+    h('div', { class: 'rgrid' }, KEYS.map(k => {
+      const arr = S.quiz.per[k] || [], ok = arr.filter(Boolean).length;
+      return h('div', { style: `--c:${PTINT[k]}` }, h('b', {}, NAMES[k]), h('span', { class: ok === arr.length ? 'ok' : 'no' }, `Kuis ${ok}/${arr.length}`), h('br'), h('span', {}, `Misi ${S.missions.has(k) ? '✓' : '–'} · AI salah ${S.ai.wrong[k]}`));
+    })),
+    h('div', { class: 'summary' },
+      h('div', { class: 'stat' }, h('b', {}, `${S.missions.size}/5`), h('small', {}, 'misi manipulasi selesai')),
+      h('div', { class: 'stat' }, h('b', {}, S.ai.answered ? `${S.ai.correct}/${S.ai.answered}` : '–'), h('small', {}, 'AI Challenge benar')),
+      h('div', { class: 'stat' }, h('b', {}, `${mins} mnt`), h('small', {}, 'waktu belajar (target 15–20)'))),
+    h('p', { class: 'def', style: 'margin-top:18px;text-align:left' }, weak.length
+      ? `Rekomendasi: ulas kembali ${weak.map(k => NAMES[k]).join(', ')} di Learning Room, lalu coba AI Challenge dengan target prinsip tersebut.`
+      : 'Pemahamanmu konsisten di kelima prinsip. Tantang dirimu dengan AI Challenge mode Acak untuk variasi yang lebih sulit.'),
+    h('div', { class: 'row', style: 'justify-content:center;margin-top:16px' },
+      weak[0] ? h('button', { class: 'btn ghost', onclick: () => { const k = weak[0]; go('room'); openPrinciple(k); } }, `Ulas ${NAMES[weak[0]]}`) : '',
+      h('button', { class: 'btn ghost', onclick: () => go('chal') }, 'AI Challenge lagi'),
+      h('button', { class: 'btn', onclick: () => { S.quiz.done = false; qi = 0; qAns = []; renderQuiz(); renderSteps(); } }, 'Ulangi kuis'))));
+}
+
+/* =========================================================
+   Boot
+   ========================================================= */
+function boot() {
+  const tl = $('#tiles');
+  KEYS.forEach((k, i) => tl.append(h('button', { class: 'tile', style: `background:${PCOL[k]};color:${PFG[k]}`, onclick: () => { go('room'); openPrinciple(k); } },
+    h('span', { html: ICON[k] }), h('span', {}, h('b', {}, NAMES[k]), h('small', {}, `${i + 1} · ${IDN[k]}`)))));
+  $('#startBtn').onclick = () => { startLearning(); go('room'); };
+  $('#arGo').onclick = startScan;
+  $('#arStop').onclick = stopScan;
+  $$('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+  $$('[data-modal]').forEach(b => b.addEventListener('click', () => { renderAIStatus(); $('#m-' + b.dataset.modal).classList.add('on'); }));
+  $('#aiChip').onclick = () => { renderAIStatus(); $('#m-ai').classList.add('on'); };
+  $$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.hasAttribute('data-close')) m.classList.remove('on'); }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.modal.on').forEach(m => m.classList.remove('on')); });
+  renderSteps();
+  AI.init();
+  const hash = (location.hash || '').slice(1);
+  if (['room', 'ar', 'chal', 'quiz'].includes(hash)) go(hash);
+}
+try {
+  const t = document.createElement('canvas');
+  if (!(t.getContext('webgl2') || t.getContext('webgl'))) throw new Error('WebGL tidak tersedia');
+  boot();
+} catch (e) {
+  document.querySelector('main').innerHTML = `<div class="fatal"><h3>Perangkat tidak mendukung WebGL</h3><p>Gestalt Explorer membutuhkan WebGL untuk visualisasi 3D. Coba browser Chrome, Edge, Firefox, atau Safari versi terbaru.</p><p class="hint">${e.message}</p></div>`;
+}
+</script>
+</body>
+</html>
