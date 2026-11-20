@@ -56,7 +56,9 @@ function tesGemini() {
   const key = apiKey_();
   if (!key) throw new Error('Isi GEMINI_API_KEY dulu di Project Settings → Script Properties.');
   Logger.log('Model yang dipakai (urutan prioritas): ' + models_(key).join(', '));
+  const t0 = Date.now();
   const spec = callGemini_(key, buildPrompt_('random', [], []));
+  Logger.log('Waktu membuat 1 tantangan: ' + ((Date.now() - t0) / 1000).toFixed(1) + ' detik');
   Logger.log('Contoh tantangan dari GenAI:\n' + JSON.stringify(spec, null, 2));
 }
 
@@ -123,14 +125,16 @@ function callGemini_(key, prompt) {
   let lastErr = '';
   for (let i = 0; i < models.length; i++) {
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent';
-    const r = UrlFetchApp.fetch(url, {
+    const base = { responseMimeType: 'application/json', temperature: 1, maxOutputTokens: 2048 };
+    const post = cfg => UrlFetchApp.fetch(url, {
       method: 'post', contentType: 'application/json', muteHttpExceptions: true,
       headers: { 'x-goog-api-key': key },
-      payload: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 1, maxOutputTokens: 2048 }
-      })
+      payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: cfg })
     });
+    // Tugas ini sederhana: matikan mode "berpikir" agar respons cepat.
+    // Jika model tidak mengenal pengaturan ini (HTTP 400), ulangi tanpa pengaturan tersebut.
+    let r = post(Object.assign({}, base, { thinkingConfig: { thinkingBudget: 0 } }));
+    if (r.getResponseCode() === 400) r = post(base);
     const code = r.getResponseCode();
     if (code !== 200) { lastErr = models[i] + ' → HTTP ' + code + ': ' + r.getContentText().slice(0, 160); continue; }
     const data = JSON.parse(r.getContentText());
